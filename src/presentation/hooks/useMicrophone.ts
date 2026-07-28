@@ -18,9 +18,10 @@ export function useMicrophone(micPort: MicrophonePort): UseMicrophoneResult {
 
   // Ensure cleanup on unmount
   useEffect(() => {
+    const port = portRef.current;
     return () => {
-      if (portRef.current.isListening()) {
-        portRef.current.stopListening();
+      if (port.isListening()) {
+        port.stopListening();
       }
     };
   }, []);
