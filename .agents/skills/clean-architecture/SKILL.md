@@ -1,3 +1,8 @@
+---
+name: clean-architecture
+description: "Enforce strict layer boundaries and dependency rules in the Barfometer project."
+---
+
 # Clean Architecture Patterns
 
 ## Purpose

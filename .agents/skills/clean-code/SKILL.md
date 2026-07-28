@@ -1,3 +1,8 @@
+---
+name: clean-code
+description: "Guide for writing clean, maintainable, and readable code in the Barfometer project."
+---
+
 # Clean Code Principles
 
 ## Purpose

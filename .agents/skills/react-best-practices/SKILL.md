@@ -1,3 +1,8 @@
+---
+name: react-best-practices
+description: "Guidelines for React component design, hooks usage, and state management in the Barfometer project."
+---
+
 # React Best Practices
 
 ## Purpose

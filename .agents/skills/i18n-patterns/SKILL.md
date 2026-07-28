@@ -1,3 +1,8 @@
+---
+name: i18n-patterns
+description: "Guidelines for implementing EN/PT-BR language support using react-i18next in the Barfometer project."
+---
+
 # i18n (Internationalization) Patterns
 
 ## Purpose

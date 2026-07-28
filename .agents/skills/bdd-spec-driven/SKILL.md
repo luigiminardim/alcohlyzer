@@ -1,3 +1,8 @@
+---
+name: bdd-spec-driven
+description: "Guide for writing behavior-driven specs using Vitest with comment-based Given/When/Then structure."
+---
+
 # BDD / Spec-Driven Development Patterns
 
 ## Purpose

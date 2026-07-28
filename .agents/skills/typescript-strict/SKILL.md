@@ -1,3 +1,8 @@
+---
+name: typescript-strict
+description: "Enforce maximum type safety in the Barfometer project using TypeScript 6+ strict features."
+---
+
 # TypeScript Strict Mode & Type Safety
 
 ## Purpose

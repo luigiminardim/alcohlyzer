@@ -1,3 +1,8 @@
+---
+name: mantine-ui
+description: "Guidelines for using Mantine UI in the Barfometer project — theming, notifications, hooks, and CSS Modules."
+---
+
 # Mantine UI Best Practices
 
 ## Purpose

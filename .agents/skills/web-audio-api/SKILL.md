@@ -1,3 +1,8 @@
+---
+name: web-audio-api
+description: "Guidelines for implementing blow detection using the Web Audio API in the Barfometer project."
+---
+
 # Web Audio API & Microphone Access
 
 ## Purpose

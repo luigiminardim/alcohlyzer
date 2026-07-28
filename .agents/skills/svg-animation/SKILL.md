@@ -1,3 +1,8 @@
+---
+name: svg-animation
+description: "Guidelines for building the Barfometer gauge with SVG and smooth needle animations."
+---
+
 # SVG Animation Techniques
 
 ## Purpose

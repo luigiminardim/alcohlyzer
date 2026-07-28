@@ -1,3 +1,8 @@
+---
+name: git-workflow
+description: "Standardize version control practices for the Barfometer project."
+---
+
 # Git Workflow & Conventional Commits
 
 ## Purpose

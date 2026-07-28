@@ -1,3 +1,8 @@
+---
+name: vite-configuration
+description: "Best practices for Vite setup, build optimization, and plugin usage in the Barfometer project."
+---
+
 # Vite Configuration & Optimization
 
 ## Purpose

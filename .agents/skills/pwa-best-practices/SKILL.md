@@ -1,3 +1,8 @@
+---
+name: pwa-best-practices
+description: "Guidelines for building the Barfometer as a high-quality Progressive Web App."
+---
+
 # PWA Best Practices
 
 ## Purpose
