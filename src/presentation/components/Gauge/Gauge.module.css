@@ -1,0 +1,26 @@
+.gaugeContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.gaugeSvg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3));
+}
+
+.zonePath {
+  cursor: pointer;
+  transition: opacity 0.2s ease, stroke-width 0.2s ease;
+  opacity: 0.8;
+}
+
+.zonePath:hover, .zonePath:active {
+  opacity: 1;
+  stroke-width: 34;
+}

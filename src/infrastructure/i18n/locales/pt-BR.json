@@ -1,0 +1,23 @@
+{
+  "gauge": {
+    "clean": "Limpo",
+    "smallCharge": "Taxa Pequena",
+    "bigCharge": "Taxa Grande"
+  },
+  "result": {
+    "clean": "Tá limpo! 🎉",
+    "smallCharge": "Taxa pequena! 💰",
+    "bigCharge": "TAXA GRANDE! 🔥"
+  },
+  "action": {
+    "start": "Iniciar Teste",
+    "reset": "Reiniciar",
+    "blow": "Sopre agora!"
+  },
+  "toast": {
+    "zoneSet": "Zona definida: {{zone}}"
+  },
+  "settings": {
+    "language": "Idioma"
+  }
+}

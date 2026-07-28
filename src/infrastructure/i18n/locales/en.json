@@ -1,0 +1,23 @@
+{
+  "gauge": {
+    "clean": "Clean",
+    "smallCharge": "Small Charge",
+    "bigCharge": "Big Charge"
+  },
+  "result": {
+    "clean": "You're clean! 🎉",
+    "smallCharge": "Small charge! 💰",
+    "bigCharge": "BIG CHARGE! 🔥"
+  },
+  "action": {
+    "start": "Start Test",
+    "reset": "Reset",
+    "blow": "Blow now!"
+  },
+  "toast": {
+    "zoneSet": "Zone set: {{zone}}"
+  },
+  "settings": {
+    "language": "Language"
+  }
+}
