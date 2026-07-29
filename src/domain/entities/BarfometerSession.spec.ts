@@ -80,5 +80,20 @@ describe('BarfometerSession', () => {
       expect(session.state.zone).toBe(IntensityZone.HIGH_ZONE);
       expect(session.state.intensity.percent).toBe(lastEvent.result.intensity.percent);
     });
+
+    it('should invoke stopMeasure when reset is called while TESTING', () => {
+      const stopMeasureSpy = vi.fn();
+      const mockPort: MeasurePort = {
+        listenMeasure: () => new Observable<PortMeasureEvent>(),
+        stopMeasure: stopMeasureSpy,
+      };
+      const session = new BarfometerSession(mockPort);
+      session.startTest();
+      expect(session.state.status).toBe(SessionStatus.TESTING);
+
+      session.reset();
+      expect(stopMeasureSpy).toHaveBeenCalledTimes(1);
+      expect(session.state.status).toBe(SessionStatus.IDLE);
+    });
   });
 });

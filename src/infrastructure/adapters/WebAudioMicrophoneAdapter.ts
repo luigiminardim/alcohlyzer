@@ -61,7 +61,7 @@ export class WebAudioMicrophoneAdapter implements MeasurePort {
       let previousTimestamp: number | null = null;
 
       // Pre-allocated buffer — created once, reused every frame.
-      let dataArray: Uint8Array | null = null;
+      let dataArray: Uint8Array<ArrayBuffer> | null = null;
 
       // --- idempotent cleanup ---
       const cleanup = (): void => {
@@ -174,9 +174,10 @@ function detectBlow(frequencyData: Uint8Array): boolean {
   let lowFreqEnergy = 0;
 
   for (let i = 0; i < length; i++) {
-    totalEnergy += frequencyData[i];
+    const val = frequencyData[i] ?? 0;
+    totalEnergy += val;
     if (i < LOW_FREQ_BIN_COUNT) {
-      lowFreqEnergy += frequencyData[i];
+      lowFreqEnergy += val;
     }
   }
   const averageVolume = totalEnergy / length;
@@ -197,7 +198,7 @@ interface AudioPipeline {
   source: MediaStreamAudioSourceNode;
   analyser: AnalyserNode;
   mediaStream: MediaStream;
-  buffer: Uint8Array;
+  buffer: Uint8Array<ArrayBuffer>;
 }
 
 async function initAudioPipeline(): Promise<AudioPipeline> {
@@ -218,7 +219,7 @@ async function initAudioPipeline(): Promise<AudioPipeline> {
   source.connect(analyser);
   // Intentionally NOT connecting analyser to destination — we only read data.
 
-  const buffer = new Uint8Array(analyser.frequencyBinCount);
+  const buffer = new Uint8Array(new ArrayBuffer(analyser.frequencyBinCount));
 
   return { ctx, source, analyser, mediaStream, buffer };
 }

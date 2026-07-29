@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { IntensityZone, ZoneStatus } from './IntensityZone';
+import { IntensityZone, ZoneStatus, getZoneColor } from './IntensityZone';
 import { Intensity } from './Intensity';
 
 describe('IntensityZone', () => {
@@ -45,6 +45,29 @@ describe('IntensityZone', () => {
 
     it('should return [66, 100] for HIGH_ZONE', () => {
       expect(IntensityZone.HIGH_ZONE.intensityBoundary()).toEqual([66, 100]);
+    });
+  });
+
+  describe('isEquals()', () => {
+    it('should correctly compare IntensityZone instances', () => {
+      expect(IntensityZone.LOW_ZONE.isEquals(IntensityZone.LOW_ZONE)).toBe(true);
+      expect(IntensityZone.LOW_ZONE.isEquals(IntensityZone.HIGH_ZONE)).toBe(false);
+    });
+
+    it('should correctly compare Intensity instances', () => {
+      const i1 = Intensity.fromPercent(50);
+      const i2 = Intensity.fromPercent(50);
+      const i3 = Intensity.fromPercent(80);
+      expect(i1.isEquals(i2)).toBe(true);
+      expect(i1.isEquals(i3)).toBe(false);
+    });
+  });
+
+  describe('getZoneColor()', () => {
+    it('should return correct colors for each zone', () => {
+      expect(getZoneColor(IntensityZone.LOW_ZONE)).toBe('#40c057');
+      expect(getZoneColor(IntensityZone.MID_ZONE)).toBe('#fab005');
+      expect(getZoneColor(IntensityZone.HIGH_ZONE)).toBe('#fa5252');
     });
   });
 });
