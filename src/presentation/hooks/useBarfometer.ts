@@ -8,7 +8,7 @@ import { TestBlowUseCase } from '../../application/TestBlowUseCase';
 import { ResetSessionUseCase } from '../../application/ResetSessionUseCase';
 import { Zone } from '../../domain/value-objects/Zone';
 import type { BlowResult } from '../../domain/value-objects/BlowResult';
-import { useMicrophone } from './useMicrophone';
+
 
 export function useBarfometer() {
   // 1. Dependency Injection / Composition Root
@@ -38,8 +38,8 @@ export function useBarfometer() {
   
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  // 5. Hooks
-  const { requestAccess, error: micError } = useMicrophone(micAdapter);
+  // 5. State
+  const [micError, setMicError] = useState<string | null>(null);
 
   // 6. Action Handlers (Bridging React to Use Cases)
   const handleSetZone = useCallback((zone: Zone) => {
@@ -50,8 +50,7 @@ export function useBarfometer() {
 
   const handleStartTest = useCallback(async () => {
     try {
-      await requestAccess(); // Ask for mic permission
-      
+      setMicError(null);
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
@@ -72,8 +71,9 @@ export function useBarfometer() {
       }
     } catch (err) {
       console.error('Failed to start test:', err);
+      setMicError(err instanceof Error ? err.message : String(err));
     }
-  }, [requestAccess, testBlowUseCase, session]);
+  }, [testBlowUseCase, session]);
 
   const handleAnimationComplete = useCallback(() => {
     session.completeAnimation();

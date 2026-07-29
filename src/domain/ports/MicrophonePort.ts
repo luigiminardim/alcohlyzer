@@ -4,25 +4,16 @@
  */
 export interface MicrophonePort {
   /**
-   * Requests permission to access the microphone.
-   * Resolves if granted, rejects if denied or unavailable.
+   * Starts listening to the microphone and processing audio data.
+   * Requests microphone access if not already granted.
+   * Allocates resources when called and frees them when stopSignal is aborted.
+   * Resolves when listening has successfully started and stops when the stopSignal is aborted.
+   * 
+   * @param onBlow Callback invoked continuously with data indicating if user is blowing
+   * @param stopSignal Signal to abort and cleanup resources
    */
-  requestAccess(): Promise<void>;
-
-  /**
-   * Starts listening and processing audio data.
-   * Calls the provided callback repeatedly with current sound data.
-   * @param onSoundData Callback invoked with current audio levels
-   */
-  startListening(onBlow: (isBlowing: boolean) => void): void;
-
-  /**
-   * Stops listening and releases microphone resources.
-   */
-  stopListening(): void;
-
-  /**
-   * Returns true if currently listening.
-   */
-  isListening(): boolean;
+  listen(
+    onBlow: (data: { isBlowing: boolean }) => void,
+    stopSignal: AbortSignal
+  ): Promise<void>;
 }

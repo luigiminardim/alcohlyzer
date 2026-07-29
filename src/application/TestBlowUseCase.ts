@@ -1,6 +1,6 @@
-import type { BarfometerSession } from '../domain/entities/BarfometerSession';
-import type { MicrophonePort } from '../domain/ports/MicrophonePort';
-import { Zone } from '../domain/value-objects/Zone';
+import type { BarfometerSession } from "../domain/entities/BarfometerSession";
+import type { MicrophonePort } from "../domain/ports/MicrophonePort";
+import { Zone } from "../domain/value-objects/Zone";
 
 export interface TestBlowInputDTO {
   stopSignal: AbortSignal;
@@ -9,8 +9,8 @@ export interface TestBlowInputDTO {
 }
 
 export type TestBlowOutputDTO = null | {
-  percent: number;
-  range: Zone;
+  targetPercent: number;
+  zone: Zone;
 };
 
 const BLOW_CONTINUOUS_DURATION_MS = 2000; // 2 seconds
@@ -44,84 +44,91 @@ export class TestBlowUseCase {
   ) {}
 
   async execute(input: TestBlowInputDTO): Promise<TestBlowOutputDTO> {
-    return new Promise((resolve) => {
-      this.session.startTest();
-      
-      const presetZone = this.session.presetZone;
-      if (!presetZone) {
-        resolve(null);
-        return;
-      }
+    this.session.startTest();
 
+    const presetZone = this.session.presetZone;
+    if (!presetZone) {
+      return null;
+    }
+
+    if (input.stopSignal.aborted) {
+      return null;
+    }
+
+    return new Promise((resolve, reject) => {
       let firstBlowTime = 0;
       let lastBlowTime = 0;
-      let isListening = true;
       let targetIntensity = 0;
 
-      const onAbort = () => {
-        if (!isListening) return;
-        isListening = false;
-        this.microphone.stopListening();
+      const internalAbort = new AbortController();
+
+      const cleanup = () => {
+        input.stopSignal.removeEventListener("abort", onExternalAbort);
+      };
+
+      const onExternalAbort = () => {
+        internalAbort.abort();
+        cleanup();
         resolve(null);
       };
-      
-      if (input.stopSignal.aborted) {
-        onAbort();
-        return;
-      }
-      
-      input.stopSignal.addEventListener('abort', onAbort);
 
-      this.microphone.startListening((isBlowing) => {
-        if (!isListening) return;
+      input.stopSignal.addEventListener("abort", onExternalAbort, { once: true });
 
-        const now = performance.now();
+      this.microphone
+        .listen(({ isBlowing }) => {
+          const now = performance.now();
 
-        if (!isBlowing) {
-          // If the user stopped blowing for too long, reset the timer
-          if (firstBlowTime > 0 && (now - lastBlowTime > BLOW_INTERRUPT_THRESHOLD_MS)) {
-            firstBlowTime = 0;
+          if (!isBlowing) {
+            // If the user stopped blowing for too long, reset the timer
+            if (
+              firstBlowTime > 0 &&
+              now - lastBlowTime > BLOW_INTERRUPT_THRESHOLD_MS
+            ) {
+              firstBlowTime = 0;
+            }
+            return;
           }
-          return;
-        }
 
-        // --- From here, isBlowing is TRUE ---
+          // --- From here, isBlowing is TRUE ---
 
-        if (firstBlowTime === 0) {
-          firstBlowTime = now;
-          // Determine the final fake target intensity based on the preset zone
-          const limits = getTargetLimitsForZone(presetZone);
-          targetIntensity = limits.min + Math.random() * (limits.max - limits.min);
-        }
-
-        lastBlowTime = now;
-        const elapsed = now - firstBlowTime;
-
-        if (elapsed >= BLOW_CONTINUOUS_DURATION_MS) {
-          isListening = false;
-          this.microphone.stopListening();
-          input.stopSignal.removeEventListener('abort', onAbort);
-
-          this.session.registerBlow(targetIntensity, elapsed);
-
-          resolve({
-            percent: targetIntensity * 100,
-            range: presetZone,
-          });
-        } else {
-          // Calculate an artificial progress intensity with a bit of random jitter
-          const progress = elapsed / BLOW_CONTINUOUS_DURATION_MS;
-          const baseValue = progress * targetIntensity;
-          
-          // Add up to ±2% jitter to make the needle wobble realistically
-          const jitter = (Math.random() - 0.5) * 0.04; 
-          const fakeIntensity = Math.max(0, Math.min(1, baseValue + jitter));
-
-          if (input.onBlowProgress) {
-            input.onBlowProgress({ percent: fakeIntensity * 100 });
+          if (firstBlowTime === 0) {
+            firstBlowTime = now;
+            // Determine the final fake target intensity based on the preset zone
+            const limits = getTargetLimitsForZone(presetZone);
+            targetIntensity =
+              limits.min + Math.random() * (limits.max - limits.min);
           }
-        }
-      });
+
+          lastBlowTime = now;
+          const elapsed = now - firstBlowTime;
+
+          if (elapsed >= BLOW_CONTINUOUS_DURATION_MS) {
+            internalAbort.abort();
+            cleanup();
+            this.session.registerBlow(targetIntensity, elapsed);
+
+            resolve({
+              targetPercent: targetIntensity * 100,
+              zone: presetZone,
+            });
+          } else {
+            // Calculate an artificial progress intensity with a bit of random jitter
+            const progress = elapsed / BLOW_CONTINUOUS_DURATION_MS;
+            const baseValue = progress * targetIntensity;
+
+            // Add up to ±2% jitter to make the needle wobble realistically
+            const jitter = (Math.random() - 0.5) * 0.04;
+            const fakeIntensity = Math.max(0, Math.min(1, baseValue + jitter));
+
+            if (input.onBlowProgress) {
+              input.onBlowProgress({ percent: fakeIntensity * 100 });
+            }
+          }
+        }, internalAbort.signal)
+        .catch((err) => {
+          cleanup();
+          reject(err);
+        });
     });
   }
 }
