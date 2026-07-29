@@ -1,31 +1,49 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { ResetSessionUseCase } from './ResetSessionUseCase';
-import { BarfometerSession, SessionState } from '../domain/entities/BarfometerSession';
-import { Zone } from '../domain/value-objects/Zone';
+import { describe, it, expect, beforeEach } from "vitest";
+import { ResetSessionUseCase } from "./ResetSessionUseCase";
+import {
+  BarfometerSession,
+  SessionStatus,
+} from "../domain/entities/BarfometerSession";
+import { IntensityZone } from "../domain/value-objects/IntensityZone";
+import { Intensity } from "../domain/value-objects/Intensity";
+import { BarfometerResult } from "../domain/value-objects/BarfometerResult";
+import type {
+  MeasurePort,
+  PortMeasureEvent,
+} from "../domain/ports/MeasurePort";
+import { Observable } from "rxjs";
 
-describe('ResetSessionUseCase', () => {
+describe("ResetSessionUseCase", () => {
   let session: BarfometerSession;
   let useCase: ResetSessionUseCase;
 
   beforeEach(() => {
-    session = new BarfometerSession();
+    const mockPort: MeasurePort = {
+      listenMeasure: () => new Observable<PortMeasureEvent>(),
+      stopMeasure: () => {},
+    };
+    session = new BarfometerSession(mockPort, IntensityZone.MID_ZONE);
     useCase = new ResetSessionUseCase(session);
   });
 
-  it('should reset the session', () => {
+  it("should reset the session", () => {
     // Given: a session with a completed test
-    session.setPresetZone(Zone.YELLOW);
     session.startTest();
-    session.registerBlow(0.5, 2000);
-    session.completeAnimation();
-    
-    expect(session.state).toBe(SessionState.RESULT);
+
+    // forcefully change state to test reset
+    (session as any)._status = SessionStatus.RESULT;
+    (session as any)._targetZone = IntensityZone.MID_ZONE;
+    (session as any)._result = new BarfometerResult(Intensity.fromPercent(100));
+
+    expect(session.state.status).toBe(SessionStatus.RESULT);
 
     // When: the use case is executed
     useCase.execute();
 
-    // Then: the session should be reset
-    expect(session.state).toBe(SessionState.ZONE_SET);
-    expect(session.result).toBeNull();
+    // Then: the session should be reset to IDLE and retain the targetZone
+    expect(session.state.status).toBe(SessionStatus.IDLE);
+    expect(session.targetZone).toBe(IntensityZone.MID_ZONE);
+    expect(session.state.intensity.percent).toBe(0);
+    expect(session.state.zone).toBe(IntensityZone.LOW_ZONE);
   });
 });

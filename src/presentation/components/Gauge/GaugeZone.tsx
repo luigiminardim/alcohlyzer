@@ -1,11 +1,11 @@
 import { memo } from 'react';
-import { Zone, getZoneColor } from '../../../domain/value-objects/Zone';
+import { IntensityZone, getZoneColor } from '../../../domain/value-objects/IntensityZone';
 import classes from './Gauge.module.css';
 
 interface GaugeZoneProps {
-  zone: Zone;
+  zone: IntensityZone;
   pathData: string;
-  onDoubleTap: (zone: Zone) => void;
+  onDoubleTap: (zone: IntensityZone) => void;
 }
 
 export const GaugeZone = memo(function GaugeZone({ zone, pathData, onDoubleTap }: GaugeZoneProps) {

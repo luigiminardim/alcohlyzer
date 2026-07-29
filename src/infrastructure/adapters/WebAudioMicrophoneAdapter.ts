@@ -1,135 +1,165 @@
-import type { MicrophonePort } from "../../domain/ports/MicrophonePort";
-import type { BlowDetectionBySoundPolicy } from "../../domain/policies/BlowDetectionBySoundPolicy";
+import { Observable } from "rxjs";
+import type {
+  MeasurePort,
+  PortMeasureEvent,
+} from "../../domain/ports/MeasurePort";
 
 const DEBUG_LOOPBACK = true;
-
 const FFT_SIZE = 256;
-
+const BLOW_DURATION_GOAL_MS = 2000;
 /**
- * Adapter that implements MicrophonePort using the browser's Web Audio API.
- * Responsible for requesting access, setting up the AudioContext,
- * and continuously polling the AnalyserNode for audio data.
+ * Thresholds for detecting a blow.
+ * These may need tuning based on real device testing.
  */
-export class WebAudioMicrophoneAdapter implements MicrophonePort {
-  constructor(
-    private readonly blowDetectionPolicy: BlowDetectionBySoundPolicy,
-  ) {}
+const BLOW_VOLUME_THRESHOLD = 30; // Minimum average volume
+const BLOW_LOW_FREQ_THRESHOLD = 150; // High energy in lowest frequency bins (the "puff" sound)
 
-  async listen(
-    onBlow: (data: { isBlowing: boolean }) => void,
-    stopSignal: AbortSignal
-  ): Promise<void> {
-    if (stopSignal.aborted) {
-      return;
-    }
+export class WebAudioMicrophoneAdapter implements MeasurePort {
+  private activeCleanup: (() => void) | null = null;
 
-    let audioContext: AudioContext | null = null;
-    let analyser: AnalyserNode | null = null;
-    let stream: MediaStream | null = null;
-    let animationFrameId: number = 0;
+  listenMeasure(): Observable<PortMeasureEvent> {
+    return new Observable<PortMeasureEvent>((subscriber) => {
+      let audioContext: AudioContext | null = null;
+      let analyser: AnalyserNode | null = null;
+      let stream: MediaStream | null = null;
+      let animationFrameId: number = 0;
 
-    const cleanup = async () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = 0;
-      }
+      let accumulatedMs = 0;
+      let lastTime = performance.now();
 
-      if (audioContext && audioContext.state !== 'closed') {
-        try {
-          await audioContext.suspend();
-          await audioContext.close();
-        } catch (e) {
-          console.error("AudioContext close error:", e);
+      const cleanup = async () => {
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+          animationFrameId = 0;
         }
-        audioContext = null;
-      }
 
-      if (stream) {
-        stream.getTracks().forEach((track) => {
-          track.enabled = false;
-          track.stop();
+        if (audioContext && audioContext.state !== "closed") {
+          const ctx = audioContext;
+          audioContext = null;
+          try {
+            await ctx.suspend();
+            await ctx.close();
+          } catch (e: any) {
+            if (e?.name !== "InvalidStateError") {
+              console.error("AudioContext close error:", e);
+            }
+          }
+        }
+
+        if (stream) {
+          stream.getTracks().forEach((track) => {
+            track.enabled = false;
+            track.stop();
+          });
+          stream = null;
+        }
+
+        analyser = null;
+      };
+
+      this.activeCleanup = cleanup;
+
+      navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then((mediaStream) => {
+          stream = mediaStream;
+
+          if (DEBUG_LOOPBACK) {
+            let audio = document.getElementById(
+              "debug-loopback-audio",
+            ) as HTMLAudioElement | null;
+            if (audio) audio.remove();
+            audio = document.createElement("audio");
+            audio.id = "debug-loopback-audio";
+            audio.controls = true;
+            audio.autoplay = true;
+            audio.style.position = "fixed";
+            audio.style.bottom = "10px";
+            audio.style.right = "10px";
+            audio.style.zIndex = "9999";
+            document.body.appendChild(audio);
+            audio.srcObject = stream;
+            audio.play().catch((e) => console.error("Audio play error:", e));
+          }
+
+          audioContext = new AudioContext();
+          const source = audioContext.createMediaStreamSource(stream);
+          analyser = audioContext.createAnalyser();
+          analyser.fftSize = FFT_SIZE;
+          source.connect(analyser);
+
+          const bufferLength = analyser.frequencyBinCount;
+          const dataArray = new Uint8Array(bufferLength);
+
+          const detect = () => {
+            if (!analyser) return;
+
+            analyser.getByteFrequencyData(dataArray);
+
+            const volume =
+              dataArray.reduce((acc, val) => acc + val, 0) / bufferLength;
+            const lowFreqEnergy =
+              (dataArray[0] ?? 0) + (dataArray[1] ?? 0) + (dataArray[2] ?? 0);
+
+            const isBlowing =
+              volume > BLOW_VOLUME_THRESHOLD &&
+              lowFreqEnergy > BLOW_LOW_FREQ_THRESHOLD;
+
+            const now = performance.now();
+            const elapsed = now - lastTime;
+            lastTime = now;
+
+            if (isBlowing) {
+              accumulatedMs += elapsed;
+            } else {
+              accumulatedMs -= elapsed;
+            }
+
+            // Clamp accumulated time between 0 and goal
+            accumulatedMs = Math.max(
+              0,
+              Math.min(accumulatedMs, BLOW_DURATION_GOAL_MS),
+            );
+
+            const isFinal = accumulatedMs >= BLOW_DURATION_GOAL_MS;
+
+            subscriber.next({
+              isFinal,
+              measurePercent: accumulatedMs / 1000, // Convert to seconds
+            });
+
+            if (!isFinal) {
+              animationFrameId = requestAnimationFrame(detect);
+            } else {
+              cleanup();
+              subscriber.complete();
+            }
+          };
+
+          // Reset time tracking right before starting loop
+          lastTime = performance.now();
+          detect();
+        })
+        .catch((error) => {
+          cleanup();
+          subscriber.error(
+            new Error(
+              `Microphone access failed: ${error instanceof Error ? error.message : String(error)}`,
+            ),
+          );
         });
-        stream = null;
-      }
 
-      analyser = null;
-      stopSignal.removeEventListener("abort", cleanup);
-    };
+      return () => {
+        cleanup();
+        this.activeCleanup = null;
+      };
+    });
+  }
 
-    stopSignal.addEventListener("abort", cleanup);
-
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      });
-
-      if (DEBUG_LOOPBACK) {
-        let audio = document.getElementById(
-          "debug-loopback-audio",
-        ) as HTMLAudioElement | null;
-
-        // Remove old element if it exists (useful for HMR)
-        if (audio) {
-          audio.remove();
-        }
-
-        audio = document.createElement("audio");
-        audio.id = "debug-loopback-audio";
-        audio.controls = true;
-        audio.autoplay = true;
-        audio.style.position = "fixed";
-        audio.style.bottom = "10px";
-        audio.style.right = "10px";
-        audio.style.zIndex = "9999";
-        document.body.appendChild(audio);
-
-        audio.srcObject = stream;
-        // Explicitly play it and catch any autoplay policy errors
-        audio.play().catch((e) => console.error("Audio play error:", e));
-      }
-
-      // Create context after user gesture/permission
-      audioContext = new AudioContext();
-
-      const source = audioContext.createMediaStreamSource(stream);
-      analyser = audioContext.createAnalyser();
-
-      // Use FFT_SIZE for a good balance of performance and resolution
-      analyser.fftSize = FFT_SIZE;
-      source.connect(analyser);
-    } catch (error) {
-      cleanup();
-      throw new Error(
-        `Microphone access failed: ${error instanceof Error ? error.message : String(error)}`,
-      );
+  stopMeasure(): void {
+    if (this.activeCleanup) {
+      this.activeCleanup();
+      this.activeCleanup = null;
     }
-
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
-
-    const detect = () => {
-      if (!analyser) return;
-
-      analyser.getByteFrequencyData(dataArray);
-
-      // Calculate overall volume (average of all frequencies)
-      const volume =
-        dataArray.reduce((acc, val) => acc + val, 0) / bufferLength;
-
-      // Calculate low frequency energy (bass frequencies, typical of blowing into mic)
-      const lowFreqEnergy =
-        (dataArray[0] ?? 0) + (dataArray[1] ?? 0) + (dataArray[2] ?? 0);
-
-      const isBlowing = this.blowDetectionPolicy.evaluate(
-        volume,
-        lowFreqEnergy,
-      );
-      
-      onBlow({ isBlowing });
-
-      animationFrameId = requestAnimationFrame(detect);
-    };
-
-    detect();
   }
 }

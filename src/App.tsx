@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Button, Stack, Title, Text, Container } from '@mantine/core';
-import { useBarfometer } from './presentation/hooks/useBarfometer';
-import { SessionState } from './domain/entities/BarfometerSession';
+import { useBarfometer, UiState } from './presentation/hooks/useBarfometer';
 import { Gauge } from './presentation/components/Gauge/Gauge';
 import { ResultDisplay } from './presentation/components/ResultDisplay/ResultDisplay';
 import { LanguageToggle } from './presentation/components/LanguageToggle/LanguageToggle';
@@ -10,16 +9,17 @@ function App() {
   const { t } = useTranslation();
   const {
     state,
-    result,
+    measuredZone,
+    measuredIntensity,
     micError,
+    presetZone,
     setZone,
     startTest,
     completeAnimation,
     reset,
   } = useBarfometer();
 
-  const isTesting = state === SessionState.LISTENING || state === SessionState.ANIMATING;
-  const isIdle = state === SessionState.IDLE;
+  const isTesting = state === UiState.LISTENING || state === UiState.ANIMATING;
 
   return (
     <>
@@ -35,7 +35,8 @@ function App() {
 
           <Gauge
             state={state}
-            result={result}
+            measuredZone={measuredZone}
+            measuredIntensity={measuredIntensity}
             onZonePreset={setZone}
             onAnimationComplete={completeAnimation}
           />
@@ -44,9 +45,9 @@ function App() {
             {!isTesting && (
               <Button
                 size="xl"
-                color={state === SessionState.ZONE_SET ? 'blue' : 'dark'}
+                color={presetZone ? 'blue' : 'dark'}
                 onClick={startTest}
-                disabled={isIdle}
+                disabled={!presetZone} // Can only start if a zone is preset
                 fullWidth
                 style={{ maxWidth: 300 }}
               >
@@ -54,7 +55,7 @@ function App() {
               </Button>
             )}
 
-            {state === SessionState.LISTENING && (
+            {state === UiState.LISTENING && (
               <Text size="xl" fw={700} c="blue" className="pulse-text">
                 {t('action.blow')}
               </Text>
@@ -71,8 +72,8 @@ function App() {
       </Container>
 
       <ResultDisplay
-        visible={state === SessionState.RESULT}
-        result={result}
+        visible={state === UiState.RESULT}
+        measuredZone={measuredZone}
         onReset={reset}
       />
     </>

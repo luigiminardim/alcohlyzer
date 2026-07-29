@@ -1,20 +1,19 @@
 import { useTranslation } from 'react-i18next';
 import { Overlay, Transition, Title, Button, Stack } from '@mantine/core';
-import type { BlowResult } from '../../../domain/value-objects/BlowResult';
-import { getZoneColor } from '../../../domain/value-objects/Zone';
+import { IntensityZone, getZoneColor } from '../../../domain/value-objects/IntensityZone';
 import classes from './ResultDisplay.module.css';
 
 interface ResultDisplayProps {
   visible: boolean;
-  result: BlowResult | null;
+  measuredZone: IntensityZone | null;
   onReset: () => void;
 }
 
-export function ResultDisplay({ visible, result, onReset }: ResultDisplayProps) {
+export function ResultDisplay({ visible, measuredZone, onReset }: ResultDisplayProps) {
   const { t } = useTranslation();
 
-  const color = result ? getZoneColor(result.zone) : '#000';
-  const labelKey = result ? `result.${result.zone.toLowerCase()}` : '';
+  const color = measuredZone ? getZoneColor(measuredZone) : '#000';
+  const labelKey = measuredZone ? `result.${measuredZone.status.toLowerCase()}` : '';
 
   return (
     <Transition mounted={visible} transition="pop" duration={400} timingFunction="ease">

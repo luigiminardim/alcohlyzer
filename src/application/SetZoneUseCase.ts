@@ -1,5 +1,5 @@
 import type { BarfometerSession } from '../domain/entities/BarfometerSession';
-import type { Zone } from '../domain/value-objects/Zone';
+import type { IntensityZone } from '../domain/value-objects/IntensityZone';
 import type { StoragePort } from '../domain/ports/StoragePort';
 
 /**
@@ -15,8 +15,8 @@ export class SetZoneUseCase {
     private readonly storage: StoragePort,
   ) {}
 
-  execute(zone: Zone): void {
-    this.session.setPresetZone(zone);
+  execute(zone: IntensityZone): void {
+    this.session.setTarget(zone);
     this.storage.savePresetZone(zone);
   }
 }

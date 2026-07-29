@@ -1,149 +1,35 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { TestBlowUseCase } from "./TestBlowUseCase";
-import {
-  BarfometerSession,
-  SessionState,
-} from "../domain/entities/BarfometerSession";
-import { Zone } from "../domain/value-objects/Zone";
-import type { MicrophonePort } from "../domain/ports/MicrophonePort";
+import { describe, it, expect } from 'vitest';
+import { TestBlowUseCase } from './TestBlowUseCase';
+import { BarfometerSession, SessionStatus } from '../domain/entities/BarfometerSession';
+import { IntensityZone } from '../domain/value-objects/IntensityZone';
+import type { MeasurePort, PortMeasureEvent } from '../domain/ports/MeasurePort';
+import { Subject } from 'rxjs';
 
-describe("TestBlowUseCase", () => {
-  let session: BarfometerSession;
-  let microphonePort: MicrophonePort;
-  let useCase: TestBlowUseCase;
-  let abortController: AbortController;
+describe('TestBlowUseCase', () => {
+  it('should return an observable that maps to fake percent and delegates to session', () => {
+    const subject = new Subject<PortMeasureEvent>();
+    const mockPort: MeasurePort = { listenMeasure: () => subject.asObservable(), stopMeasure: () => {} };
+    const session = new BarfometerSession(mockPort, IntensityZone.HIGH_ZONE);
+    const useCase = new TestBlowUseCase(session);
 
-  const mockNow = vi.fn();
-
-  beforeEach(() => {
-    session = new BarfometerSession(Zone.RED);
-
-    microphonePort = {
-      listen: vi.fn(),
-    };
-
-    useCase = new TestBlowUseCase(session, microphonePort);
-    abortController = new AbortController();
-
-    vi.stubGlobal("performance", { now: mockNow });
-    vi.spyOn(Math, "random").mockReturnValue(0.5); // Predictable random for target generation and jitter
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it("should stream fake progress and resolve after 2 seconds with target intensity", async () => {
-    const onBlowProgress = vi.fn();
-
-    let blowCallback: (data: { isBlowing: boolean }) => void;
-    vi.mocked(microphonePort.listen).mockImplementation(
-      async (onBlow, stopSignal) => {
-        blowCallback = onBlow;
-        return new Promise<void>((resolve) => {
-          stopSignal.addEventListener("abort", () => resolve());
-        });
-      },
-    );
-
-    const promise = useCase.execute({
-      stopSignal: abortController.signal,
-      onBlowProgress,
+    const observable = useCase.execute();
+    
+    let lastPercent = 0;
+    observable.subscribe((event) => {
+      lastPercent = event.result.intensity.percent;
     });
 
-    // Target for RED zone with Math.random() = 0.5 is:
-    // min: 0.8, max: 1.0 -> 0.8 + 0.5 * 0.2 = 0.9
+    // Emulate port time tracking
+    subject.next({ isFinal: false, measurePercent: 10 }); 
 
-    // Simulate continuous blowing in 100ms increments
-    for (let i = 0; i < 20; i++) {
-      mockNow.mockReturnValue(1000 + i * 100);
-      blowCallback!({ isBlowing: true });
-    }
+    // Because it's rigged, after 10% it should be around 10% of target
+    expect(lastPercent).toBeGreaterThan(0);
+    expect(lastPercent).toBeLessThan(20); // Just checking it didn't jump to 100
 
-    // Reach the 2000ms goal
-    mockNow.mockReturnValue(3000);
-    blowCallback!({ isBlowing: true });
+    subject.next({ isFinal: true, measurePercent: 100 });
 
-    const result = await promise;
-
-    expect(onBlowProgress).toHaveBeenCalledTimes(20); // 0 to 19 (20th is exact 2000ms, which resolves without firing progress)
-
-    // The 19th frame (1900ms) has progress = 1900/2000 = 0.95
-    // baseValue = 0.95 * 0.9 = 0.855
-    // jitter = (0.5 - 0.5) * 0.04 = 0
-    expect(onBlowProgress).toHaveBeenLastCalledWith({ percent: 85.5 });
-
-    expect(session.state).toBe(SessionState.ANIMATING);
-    expect(result).toEqual({
-      targetPercent: 90, // target intensity 0.9 * 100
-      zone: Zone.RED,
-    });
-  });
-
-  it("should reset the timer if there is an interruption > 250ms", async () => {
-    const onBlowProgress = vi.fn();
-
-    let blowCallback: (data: { isBlowing: boolean }) => void;
-    vi.mocked(microphonePort.listen).mockImplementation(
-      async (onBlow, stopSignal) => {
-        blowCallback = onBlow;
-        return new Promise<void>((resolve) => {
-          stopSignal.addEventListener("abort", () => resolve());
-        });
-      },
-    );
-
-    const promise = useCase.execute({
-      stopSignal: abortController.signal,
-      onBlowProgress,
-    });
-
-    // First burst: 1000ms (10 frames)
-    for (let i = 0; i <= 10; i++) {
-      mockNow.mockReturnValue(1000 + i * 100);
-      blowCallback!({ isBlowing: true });
-    }
-
-    // Interruption (isBlowing = false at 2301)
-    mockNow.mockReturnValue(2301);
-    blowCallback!({ isBlowing: false }); // Resets firstBlowTime because 2301 - 2000 > 250
-
-    // Second burst: Reach the new 2000ms goal from 3000 -> 5000
-    for (let i = 0; i < 20; i++) {
-      mockNow.mockReturnValue(3000 + i * 100);
-      blowCallback!({ isBlowing: true });
-    }
-
-    mockNow.mockReturnValue(5000);
-    blowCallback!({ isBlowing: true });
-
-    const result = await promise;
-
-    expect(result?.targetPercent).toBe(90);
-  });
-
-  it("should abort and resolve with null when stopSignal is triggered", async () => {
-    mockNow.mockReturnValue(1000);
-
-    let blowCallback: (data: { isBlowing: boolean }) => void;
-    vi.mocked(microphonePort.listen).mockImplementation(
-      async (onBlow, stopSignal) => {
-        blowCallback = onBlow;
-        return new Promise<void>((resolve) => {
-          stopSignal.addEventListener("abort", () => resolve());
-        });
-      },
-    );
-
-    const promise = useCase.execute({ stopSignal: abortController.signal });
-
-    blowCallback!({ isBlowing: true }); // Start blowing
-
-    // Abort before 2 seconds
-    abortController.abort();
-
-    const result = await promise;
-
-    expect(result).toBeNull();
+    // Should be completed and reached HIGH zone
+    expect(session.state.status).toBe(SessionStatus.RESULT);
+    expect(session.state.zone).toBe(IntensityZone.HIGH_ZONE);
   });
 });
