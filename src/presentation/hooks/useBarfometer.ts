@@ -91,6 +91,8 @@ export function useBarfometer() {
           setCurrentIntensity(event.result.intensity.percent);
 
           if (event.isFinal && uiState !== UiState.ANIMATING) {
+            setMeasuredZone(event.result.zone);
+            setMeasuredIntensity(event.result.intensity);
             setUiState(UiState.ANIMATING);
             subscriptionRef.current?.unsubscribe();
           }
