@@ -4,7 +4,6 @@ import type {
   PortMeasureEvent,
 } from "../../domain/ports/MeasurePort";
 
-const DEBUG_LOOPBACK = true;
 const FFT_SIZE = 256;
 const BLOW_DURATION_GOAL_MS = 2000;
 /**
@@ -21,23 +20,32 @@ export class WebAudioMicrophoneAdapter implements MeasurePort {
     return new Observable<PortMeasureEvent>((subscriber) => {
       let audioContext: AudioContext | null = null;
       let analyser: AnalyserNode | null = null;
+      let source: MediaStreamAudioSourceNode | null = null;
       let stream: MediaStream | null = null;
       let animationFrameId: number = 0;
+      let isCleanedUp = false;
 
       let accumulatedMs = 0;
       let lastTime = performance.now();
 
       const cleanup = async () => {
+        if (isCleanedUp) return;
+        isCleanedUp = true;
+
         if (animationFrameId) {
           cancelAnimationFrame(animationFrameId);
           animationFrameId = 0;
+        }
+
+        if (source) {
+          source.disconnect();
+          source = null;
         }
 
         if (audioContext && audioContext.state !== "closed") {
           const ctx = audioContext;
           audioContext = null;
           try {
-            await ctx.suspend();
             await ctx.close();
           } catch (e: any) {
             if (e?.name !== "InvalidStateError") {
@@ -60,30 +68,28 @@ export class WebAudioMicrophoneAdapter implements MeasurePort {
       this.activeCleanup = cleanup;
 
       navigator.mediaDevices
-        .getUserMedia({ audio: true })
+        .getUserMedia({
+          audio: {
+            echoCancellation: false,
+            noiseSuppression: false,
+            autoGainControl: false,
+          },
+        })
         .then((mediaStream) => {
-          stream = mediaStream;
-
-          if (DEBUG_LOOPBACK) {
-            let audio = document.getElementById(
-              "debug-loopback-audio",
-            ) as HTMLAudioElement | null;
-            if (audio) audio.remove();
-            audio = document.createElement("audio");
-            audio.id = "debug-loopback-audio";
-            audio.controls = true;
-            audio.autoplay = true;
-            audio.style.position = "fixed";
-            audio.style.bottom = "10px";
-            audio.style.right = "10px";
-            audio.style.zIndex = "9999";
-            document.body.appendChild(audio);
-            audio.srcObject = stream;
-            audio.play().catch((e) => console.error("Audio play error:", e));
+          if (isCleanedUp) {
+            mediaStream.getTracks().forEach((track) => track.stop());
+            return;
           }
 
+          stream = mediaStream;
+
           audioContext = new AudioContext();
-          const source = audioContext.createMediaStreamSource(stream);
+          if (audioContext.state === "suspended") {
+            audioContext
+              .resume()
+              .catch((e) => console.error("AudioContext resume error:", e));
+          }
+          source = audioContext.createMediaStreamSource(stream);
           analyser = audioContext.createAnalyser();
           analyser.fftSize = FFT_SIZE;
           source.connect(analyser);
