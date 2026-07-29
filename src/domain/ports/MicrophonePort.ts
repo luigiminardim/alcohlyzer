@@ -1,12 +1,6 @@
-export interface SoundData {
-  readonly volume: number;
-  readonly lowFreqEnergy: number;
-  readonly timestamp: number;
-}
-
 /**
  * MicrophonePort abstracts the browser's microphone access (Web Audio API/getUserMedia).
- * It provides a way to start listening to the microphone and emitting sound data.
+ * It provides a way to start listening to the microphone and emitting blow events.
  */
 export interface MicrophonePort {
   /**
@@ -20,7 +14,7 @@ export interface MicrophonePort {
    * Calls the provided callback repeatedly with current sound data.
    * @param onSoundData Callback invoked with current audio levels
    */
-  startListening(onSoundData: (data: SoundData) => void): void;
+  startListening(onBlow: (isBlowing: boolean) => void): void;
 
   /**
    * Stops listening and releases microphone resources.

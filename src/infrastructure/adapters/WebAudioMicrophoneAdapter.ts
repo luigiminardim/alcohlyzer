@@ -1,4 +1,5 @@
-import type { MicrophonePort, SoundData } from '../../domain/ports/MicrophonePort';
+import type { MicrophonePort } from '../../domain/ports/MicrophonePort';
+import type { BlowDetectionBySoundPolicy } from '../../domain/policies/BlowDetectionBySoundPolicy';
 
 /**
  * Adapter that implements MicrophonePort using the browser's Web Audio API.
@@ -10,6 +11,8 @@ export class WebAudioMicrophoneAdapter implements MicrophonePort {
   private analyser: AnalyserNode | null = null;
   private stream: MediaStream | null = null;
   private animationFrameId: number = 0;
+
+  constructor(private readonly blowDetectionPolicy: BlowDetectionBySoundPolicy) {}
 
   async requestAccess(): Promise<void> {
     try {
@@ -29,7 +32,7 @@ export class WebAudioMicrophoneAdapter implements MicrophonePort {
     }
   }
 
-  startListening(onSoundData: (data: SoundData) => void): void {
+  startListening(onBlow: (isBlowing: boolean) => void): void {
     if (!this.analyser) {
       throw new Error('Microphone not initialized. Call requestAccess() first.');
     }
@@ -51,11 +54,8 @@ export class WebAudioMicrophoneAdapter implements MicrophonePort {
       // Calculate low frequency energy (bass frequencies, typical of blowing into mic)
       const lowFreqEnergy = (dataArray[0] ?? 0) + (dataArray[1] ?? 0) + (dataArray[2] ?? 0);
 
-      onSoundData({
-        volume,
-        lowFreqEnergy,
-        timestamp: performance.now(),
-      });
+      const isBlowing = this.blowDetectionPolicy.evaluate(volume, lowFreqEnergy);
+      onBlow(isBlowing);
 
       this.animationFrameId = requestAnimationFrame(detect);
     };

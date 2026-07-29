@@ -2,10 +2,9 @@ import { useState, useMemo, useCallback, useRef } from 'react';
 import { BarfometerSession, SessionState } from '../../domain/entities/BarfometerSession';
 import { LocalStorageAdapter } from '../../infrastructure/adapters/LocalStorageAdapter';
 import { WebAudioMicrophoneAdapter } from '../../infrastructure/adapters/WebAudioMicrophoneAdapter';
-import { AnalyserNodeSoundAdapter } from '../../infrastructure/adapters/AnalyserNodeSoundAdapter';
+import { BlowDetectionBySoundPolicy } from '../../domain/policies/BlowDetectionBySoundPolicy';
 import { SetZoneUseCase } from '../../application/SetZoneUseCase';
-import { StartTestUseCase } from '../../application/StartTestUseCase';
-import { ProcessBlowUseCase } from '../../application/ProcessBlowUseCase';
+import { TestBlowUseCase } from '../../application/TestBlowUseCase';
 import { ResetSessionUseCase } from '../../application/ResetSessionUseCase';
 import { Zone } from '../../domain/value-objects/Zone';
 import type { BlowResult } from '../../domain/value-objects/BlowResult';
@@ -14,8 +13,8 @@ import { useMicrophone } from './useMicrophone';
 export function useBarfometer() {
   // 1. Dependency Injection / Composition Root
   const storage = useMemo(() => new LocalStorageAdapter(), []);
-  const micAdapter = useMemo(() => new WebAudioMicrophoneAdapter(), []);
-  const soundAdapter = useMemo(() => new AnalyserNodeSoundAdapter(), []);
+  const soundAdapter = useMemo(() => new BlowDetectionBySoundPolicy(), []);
+  const micAdapter = useMemo(() => new WebAudioMicrophoneAdapter(soundAdapter), [soundAdapter]);
 
   // 2. Aggregate Root (Instantiated once)
   const sessionRef = useRef<BarfometerSession | null>(null);
@@ -27,8 +26,7 @@ export function useBarfometer() {
 
   // 3. Use Cases
   const setZoneUseCase = useMemo(() => new SetZoneUseCase(session, storage), [session, storage]);
-  const startTestUseCase = useMemo(() => new StartTestUseCase(session), [session]);
-  const processBlowUseCase = useMemo(() => new ProcessBlowUseCase(session, soundAdapter), [session, soundAdapter]);
+  const testBlowUseCase = useMemo(() => new TestBlowUseCase(session, micAdapter), [session, micAdapter]);
   const resetSessionUseCase = useMemo(() => new ResetSessionUseCase(session), [session]);
 
   // 4. React State (syncs with Domain State)
@@ -36,12 +34,12 @@ export function useBarfometer() {
   const [state, setState] = useState<SessionState>(session.state);
   const [presetZone, setPresetZone] = useState<Zone | null>(session.presetZone);
   const [result, setResult] = useState<BlowResult | null>(session.result);
+  const [currentIntensity, setCurrentIntensity] = useState<number>(0);
   
-  // Track start of blow for duration calculation
-  const testStartTimeRef = useRef<number>(0);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // 5. Hooks
-  const { requestAccess, startListening, stopListening, error: micError } = useMicrophone(micAdapter);
+  const { requestAccess, error: micError } = useMicrophone(micAdapter);
 
   // 6. Action Handlers (Bridging React to Use Cases)
   const handleSetZone = useCallback((zone: Zone) => {
@@ -54,25 +52,28 @@ export function useBarfometer() {
     try {
       await requestAccess(); // Ask for mic permission
       
-      startTestUseCase.execute();
-      setState(session.state);
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      abortControllerRef.current = new AbortController();
+      setCurrentIntensity(0);
       
-      testStartTimeRef.current = performance.now();
-      
-      // Start listening to sound data and passing it to the use case
-      startListening((soundData) => {
-        const blowDurationMs = performance.now() - testStartTimeRef.current;
-        const blowDetected = processBlowUseCase.execute(soundData, blowDurationMs);
-        
-        if (blowDetected) {
-          stopListening(); // Stop mic as soon as blow is registered
-          setState(session.state); // State is now ANIMATING
-        }
+      const promise = testBlowUseCase.execute({
+        stopSignal: abortControllerRef.current.signal,
+        onBlowProgress: (data) => setCurrentIntensity(data.percent)
       });
+      
+      setState(session.state); // Trigger re-render for LISTENING state
+      
+      const resultDto = await promise;
+      
+      if (resultDto) {
+        setState(session.state); // State is now ANIMATING
+      }
     } catch (err) {
       console.error('Failed to start test:', err);
     }
-  }, [requestAccess, startTestUseCase, startListening, processBlowUseCase, stopListening, session]);
+  }, [requestAccess, testBlowUseCase, session]);
 
   const handleAnimationComplete = useCallback(() => {
     session.completeAnimation();
@@ -81,15 +82,20 @@ export function useBarfometer() {
   }, [session]);
 
   const handleReset = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
     resetSessionUseCase.execute();
     setState(session.state);
     setResult(null);
+    setCurrentIntensity(0);
   }, [resetSessionUseCase, session]);
 
   return {
     state,
     presetZone,
     result,
+    currentIntensity,
     micError,
     setZone: handleSetZone,
     startTest: handleStartTest,

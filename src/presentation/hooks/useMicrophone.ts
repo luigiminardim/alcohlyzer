@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import type { MicrophonePort, SoundData } from '../../domain/ports/MicrophonePort';
+import type { MicrophonePort } from '../../domain/ports/MicrophonePort';
 
 interface UseMicrophoneResult {
   isListening: boolean;
   requestAccess: () => Promise<void>;
-  startListening: (onSoundData: (data: SoundData) => void) => void;
+  startListening: (onBlow: (isBlowing: boolean) => void) => void;
   stopListening: () => void;
   error: string | null;
 }
@@ -36,9 +36,9 @@ export function useMicrophone(micPort: MicrophonePort): UseMicrophoneResult {
     }
   };
 
-  const startListening = (onSoundData: (data: SoundData) => void) => {
+  const startListening = (onBlow: (isBlowing: boolean) => void) => {
     try {
-      micPort.startListening(onSoundData);
+      micPort.startListening(onBlow);
       setIsListening(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
