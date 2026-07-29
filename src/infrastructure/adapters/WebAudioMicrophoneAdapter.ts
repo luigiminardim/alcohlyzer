@@ -28,20 +28,28 @@ export class WebAudioMicrophoneAdapter implements MicrophonePort {
     let stream: MediaStream | null = null;
     let animationFrameId: number = 0;
 
-    const cleanup = () => {
+    const cleanup = async () => {
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
         animationFrameId = 0;
       }
 
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
-        stream = null;
+      if (audioContext && audioContext.state !== 'closed') {
+        try {
+          await audioContext.suspend();
+          await audioContext.close();
+        } catch (e) {
+          console.error("AudioContext close error:", e);
+        }
+        audioContext = null;
       }
 
-      if (audioContext) {
-        audioContext.close().catch(console.error);
-        audioContext = null;
+      if (stream) {
+        stream.getTracks().forEach((track) => {
+          track.enabled = false;
+          track.stop();
+        });
+        stream = null;
       }
 
       analyser = null;
