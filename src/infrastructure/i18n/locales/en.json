@@ -1,23 +1,32 @@
 {
   "gauge": {
-    "clean": "Clean",
-    "smallCharge": "Small Charge",
-    "bigCharge": "Big Charge"
+    "low": "Clean",
+    "mid": "Tipsy",
+    "high": "Drunk"
   },
   "result": {
-    "clean": "You're clean! 🎉",
-    "smallCharge": "Small charge! 💰",
-    "bigCharge": "BIG CHARGE! 🔥"
+    "low": "You're clean!",
+    "mid": "Tipsy!",
+    "high": "DRUNK!"
   },
   "action": {
     "start": "Start Test",
     "reset": "Reset",
-    "blow": "Blow now!"
+    "blow": "Blow now!",
+    "abort": "Abort",
+    "testAgain": "Test Again"
   },
   "toast": {
     "zoneSet": "Zone set: {{zone}}"
   },
   "settings": {
     "language": "Language"
+  },
+  "app": {
+    "title": "Barfometer"
+  },
+  "visor": {
+    "selectHint": "Double-tap a zone to select",
+    "listening": "Blow now!"
   }
 }

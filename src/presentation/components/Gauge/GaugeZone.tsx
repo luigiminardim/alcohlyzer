@@ -5,10 +5,11 @@ import classes from './Gauge.module.css';
 interface GaugeZoneProps {
   zone: IntensityZone;
   pathData: string;
+  isResult?: boolean;
   onDoubleTap: (zone: IntensityZone) => void;
 }
 
-export const GaugeZone = memo(function GaugeZone({ zone, pathData, onDoubleTap }: GaugeZoneProps) {
+export const GaugeZone = memo(function GaugeZone({ zone, pathData, isResult, onDoubleTap }: GaugeZoneProps) {
   const color = getZoneColor(zone);
 
   return (
@@ -17,7 +18,8 @@ export const GaugeZone = memo(function GaugeZone({ zone, pathData, onDoubleTap }
       fill="none"
       stroke={color}
       strokeWidth="30"
-      className={classes.zonePath}
+      className={`${classes.zonePath} ${isResult ? classes.zoneResult : ''}`}
+      style={{ WebkitTapHighlightColor: 'transparent', outline: 'none' }}
       onDoubleClick={() => onDoubleTap(zone)}
       onTouchStart={(e) => {
         // Fast double-tap for mobile

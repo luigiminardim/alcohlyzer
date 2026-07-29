@@ -1,7 +1,6 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import {
   BarfometerSession,
-  SessionStatus,
 } from "../../domain/entities/BarfometerSession";
 import { LocalStorageAdapter } from "../../infrastructure/adapters/LocalStorageAdapter";
 import { WebAudioMicrophoneAdapter } from "../../infrastructure/adapters/WebAudioMicrophoneAdapter";
@@ -16,7 +15,6 @@ import { Subscription } from "rxjs";
 export enum UiState {
   IDLE = "IDLE",
   LISTENING = "LISTENING",
-  ANIMATING = "ANIMATING",
   RESULT = "RESULT",
 }
 
@@ -90,10 +88,10 @@ export function useBarfometer() {
         next: (event: BarfometerMeasureEvent) => {
           setCurrentIntensity(event.result.intensity.percent);
 
-          if (event.isFinal && uiState !== UiState.ANIMATING) {
+          if (event.isFinal) {
             setMeasuredZone(event.result.zone);
             setMeasuredIntensity(event.result.intensity);
-            setUiState(UiState.ANIMATING);
+            setUiState(UiState.RESULT);
             subscriptionRef.current?.unsubscribe();
           }
         },
@@ -113,13 +111,7 @@ export function useBarfometer() {
     }
   }, [testBlowUseCase, uiState]);
 
-  const handleAnimationComplete = useCallback(() => {
-    if (session.state.status === SessionStatus.RESULT) {
-      setUiState(UiState.RESULT);
-      setMeasuredZone(session.state.zone);
-      setMeasuredIntensity(session.state.intensity);
-    }
-  }, [session]);
+
 
   const handleReset = useCallback(() => {
     if (subscriptionRef.current) {
@@ -141,7 +133,6 @@ export function useBarfometer() {
     micError,
     setZone: handleSetZone,
     startTest: handleStartTest,
-    completeAnimation: handleAnimationComplete,
     reset: handleReset,
   };
 }

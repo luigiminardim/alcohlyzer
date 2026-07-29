@@ -1,11 +1,17 @@
 .gaugeContainer {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
   max-width: 500px;
   margin: 0 auto;
   position: relative;
+  gap: 1rem;
+}
+
+.visorWrapper {
+  margin-top: -1rem; /* pull it slightly closer to the gauge */
 }
 
 .gaugeSvg {
@@ -23,4 +29,17 @@
 .zonePath:hover, .zonePath:active {
   opacity: 1;
   stroke-width: 34;
+}
+
+.zoneResult {
+  opacity: 1;
+  stroke-width: 36;
+  filter: brightness(1.5) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+  0% { filter: brightness(1.5) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5)); }
+  50% { filter: brightness(1.8) drop-shadow(0 0 16px rgba(255, 255, 255, 0.8)); }
+  100% { filter: brightness(1.5) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5)); }
 }

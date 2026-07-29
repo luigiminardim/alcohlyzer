@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next';
 import { Button, Stack, Title, Text, Container } from '@mantine/core';
 import { useBarfometer, UiState } from './presentation/hooks/useBarfometer';
 import { Gauge } from './presentation/components/Gauge/Gauge';
-import { ResultDisplay } from './presentation/components/ResultDisplay/ResultDisplay';
 import { LanguageToggle } from './presentation/components/LanguageToggle/LanguageToggle';
 
 function App() {
@@ -10,16 +9,30 @@ function App() {
   const {
     state,
     measuredZone,
-    measuredIntensity,
+    currentIntensity,
     micError,
     presetZone,
     setZone,
     startTest,
-    completeAnimation,
     reset,
   } = useBarfometer();
 
-  const isTesting = state === UiState.LISTENING || state === UiState.ANIMATING;
+  let buttonLabel = t('action.start');
+  let buttonAction = startTest;
+  let buttonColor = presetZone ? 'blue' : 'dark';
+  let buttonDisabled = !presetZone && state === UiState.IDLE;
+  let buttonVariant = 'filled';
+
+  if (state === UiState.LISTENING) {
+    buttonLabel = t('action.abort');
+    buttonAction = reset;
+    buttonColor = 'red';
+    buttonVariant = 'outline';
+  } else if (state === UiState.RESULT) {
+    buttonLabel = t('action.testAgain');
+    buttonAction = reset;
+    buttonColor = 'dark';
+  }
 
   return (
     <>
@@ -28,38 +41,29 @@ function App() {
       <Container size="sm" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
         <Stack align="center" gap="xl" w="100%">
           
-          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <Title order={1} c="white">Barfometer</Title>
-            <Text c="dimmed" size="lg" mt="xs">The Ultimate Truth Teller</Text>
+          <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+            <Title order={1} c="white">{t('app.title')}</Title>
           </div>
 
           <Gauge
             state={state}
             measuredZone={measuredZone}
-            measuredIntensity={measuredIntensity}
+            currentIntensity={currentIntensity}
             onZonePreset={setZone}
-            onAnimationComplete={completeAnimation}
           />
 
           <div style={{ minHeight: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '2rem', width: '100%' }}>
-            {!isTesting && (
-              <Button
-                size="xl"
-                color={presetZone ? 'blue' : 'dark'}
-                onClick={startTest}
-                disabled={!presetZone} // Can only start if a zone is preset
-                fullWidth
-                style={{ maxWidth: 300 }}
-              >
-                {t('action.start')}
-              </Button>
-            )}
-
-            {state === UiState.LISTENING && (
-              <Text size="xl" fw={700} c="blue" className="pulse-text">
-                {t('action.blow')}
-              </Text>
-            )}
+            <Button
+              size="xl"
+              color={buttonColor}
+              variant={buttonVariant}
+              onClick={buttonAction}
+              disabled={buttonDisabled}
+              fullWidth
+              style={{ maxWidth: 300 }}
+            >
+              {buttonLabel}
+            </Button>
           </div>
 
           {micError && (
@@ -71,11 +75,6 @@ function App() {
         </Stack>
       </Container>
 
-      <ResultDisplay
-        visible={state === UiState.RESULT}
-        measuredZone={measuredZone}
-        onReset={reset}
-      />
     </>
   );
 }

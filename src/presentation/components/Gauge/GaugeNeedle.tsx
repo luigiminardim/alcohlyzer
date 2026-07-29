@@ -10,9 +10,7 @@ export const GaugeNeedle = memo(function GaugeNeedle({ angle }: GaugeNeedleProps
       style={{
         transformOrigin: '100px 100px',
         transform: `rotate(${angle - 90}deg)`,
-        // We only transition if angle is snapping (0s) or normal movement (0.3s)
-        // During wobble, requestAnimationFrame updates it every frame so we don't want CSS transitions fighting it.
-        // The hook handles the smooth interpolation during wobble.
+        transition: 'transform 0.15s ease-out',
       }}
     >
       {/* Needle Line */}

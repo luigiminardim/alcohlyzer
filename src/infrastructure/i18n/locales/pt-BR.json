@@ -1,23 +1,32 @@
 {
   "gauge": {
-    "clean": "Limpo",
-    "smallCharge": "Taxa Pequena",
-    "bigCharge": "Taxa Grande"
+    "low": "Limpo",
+    "mid": "Alcolicado",
+    "high": "Bêbado"
   },
   "result": {
-    "clean": "Tá limpo! 🎉",
-    "smallCharge": "Taxa pequena! 💰",
-    "bigCharge": "TAXA GRANDE! 🔥"
+    "low": "Tá limpo!",
+    "mid": "Alcolicado!",
+    "high": "BÊBADO!"
   },
   "action": {
     "start": "Iniciar Teste",
     "reset": "Reiniciar",
-    "blow": "Sopre agora!"
+    "blow": "Sopre agora!",
+    "abort": "Cancelar",
+    "testAgain": "Testar Novamente"
   },
   "toast": {
     "zoneSet": "Zona definida: {{zone}}"
   },
   "settings": {
     "language": "Idioma"
+  },
+  "app": {
+    "title": "Barfômetro"
+  },
+  "visor": {
+    "selectHint": "Toque duas vezes numa zona para selecionar",
+    "listening": "Sopre agora!"
   }
 }
