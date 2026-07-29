@@ -125,7 +125,7 @@ export class WebAudioMicrophoneAdapter implements MeasurePort {
 
             subscriber.next({
               isFinal,
-              measurePercent: accumulatedMs / 1000, // Convert to seconds
+              measurePercent: (100 * accumulatedMs) / BLOW_DURATION_GOAL_MS,
             });
 
             if (!isFinal) {
