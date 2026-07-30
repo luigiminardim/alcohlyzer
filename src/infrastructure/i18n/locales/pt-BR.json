@@ -1,12 +1,12 @@
 {
   "gauge": {
     "low": "Limpo",
-    "mid": "Alcolicado",
+    "mid": "Alcolizado",
     "high": "Bêbado"
   },
   "result": {
     "low": "Tá limpo!",
-    "mid": "Alcolicado!",
+    "mid": "Alcolizado!",
     "high": "BÊBADO!"
   },
   "action": {
