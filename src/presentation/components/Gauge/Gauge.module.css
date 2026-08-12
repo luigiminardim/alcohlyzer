@@ -28,7 +28,6 @@
 
 .zonePath:hover, .zonePath:active {
   opacity: 1;
-  stroke-width: 34;
 }
 
 .zoneResult {
