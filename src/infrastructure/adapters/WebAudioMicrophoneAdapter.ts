@@ -5,7 +5,7 @@ import type {
 } from "../../domain/ports/MeasurePort";
 
 const FFT_SIZE = 256;
-const BLOW_DURATION_GOAL_MS = 2000;
+const BLOW_DURATION_GOAL_MS = 1500;
 /**
  * Thresholds for detecting a blow.
  * These may need tuning based on real device testing.
