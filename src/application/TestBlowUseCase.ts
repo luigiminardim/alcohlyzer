@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import type { BarfometerSession, BarfometerMeasureEvent } from "../domain/entities/BarfometerSession";
+import type { AlcohlyzerSession, AlcohlyzerMeasureEvent } from "../domain/entities/AlcohlyzerSession";
 
 
 /**
@@ -7,15 +7,15 @@ import type { BarfometerSession, BarfometerMeasureEvent } from "../domain/entiti
  *
  * Responsibilities:
  * - Starts the test on the session.
- * - Resolves to an Observable<BarfometerMeasureEvent> for UI subscription.
+ * - Resolves to an Observable<AlcohlyzerMeasureEvent> for UI subscription.
  */
 export class TestBlowUseCase {
   constructor(
-    private readonly session: BarfometerSession,
+    private readonly session: AlcohlyzerSession,
   ) {}
 
-  execute(): Observable<BarfometerMeasureEvent> {
-    // The session handles mapping the raw port event to the rigged BarfometerMeasureEvent
+  execute(): Observable<AlcohlyzerMeasureEvent> {
+    // The session handles mapping the raw port event to the rigged AlcohlyzerMeasureEvent
     return this.session.startTest();
   }
 }

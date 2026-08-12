@@ -1,7 +1,7 @@
 import { Observable, map } from "rxjs";
 import { IntensityZone } from "../value-objects/IntensityZone";
 import { Intensity } from "../value-objects/Intensity";
-import { BarfometerResult } from "../value-objects/BarfometerResult";
+import { AlcohlyzerResult } from "../value-objects/AlcohlyzerResult";
 import type { MeasurePort, PortMeasureEvent } from "../ports/MeasurePort";
 
 export enum SessionStatus {
@@ -10,15 +10,15 @@ export enum SessionStatus {
   RESULT = "RESULT",
 }
 
-export interface BarfometerMeasureEvent {
+export interface AlcohlyzerMeasureEvent {
   isFinal: boolean;
-  result: BarfometerResult;
+  result: AlcohlyzerResult;
 }
 
-export class BarfometerSession {
+export class AlcohlyzerSession {
   private _status: SessionStatus = SessionStatus.IDLE;
   private _targetZone: IntensityZone = IntensityZone.LOW_ZONE;
-  private _result: BarfometerResult = new BarfometerResult(
+  private _result: AlcohlyzerResult = new AlcohlyzerResult(
     Intensity.fromPercent(0),
   );
 
@@ -53,13 +53,13 @@ export class BarfometerSession {
     this._targetZone = zone;
   }
 
-  startTest(): Observable<BarfometerMeasureEvent> {
+  startTest(): Observable<AlcohlyzerMeasureEvent> {
     if (this._status !== SessionStatus.IDLE) {
       throw new Error(`Cannot start test in ${this._status} state`);
     }
 
     this._status = SessionStatus.TESTING;
-    this._result = new BarfometerResult(Intensity.fromPercent(0));
+    this._result = new AlcohlyzerResult(Intensity.fromPercent(0));
 
     // Pick randomized target intensity for the whole session
     const boundaries = this._targetZone.intensityBoundary();
@@ -74,7 +74,7 @@ export class BarfometerSession {
           Math.min(100, (progress / 100) * targetIntensityValue),
         );
         const intensity = Intensity.fromPercent(intencityPercent);
-        const result = new BarfometerResult(intensity);
+        const result = new AlcohlyzerResult(intensity);
 
         if (this._status === SessionStatus.TESTING) {
           this._result = result;
@@ -96,6 +96,6 @@ export class BarfometerSession {
       this.measurePort.stopMeasure();
     }
     this._status = SessionStatus.IDLE;
-    this._result = new BarfometerResult(Intensity.fromPercent(0));
+    this._result = new AlcohlyzerResult(Intensity.fromPercent(0));
   }
 }

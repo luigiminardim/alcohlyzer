@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IntensityZone, getZoneColor } from '../../../domain/value-objects/IntensityZone';
-import { UiState } from '../../hooks/useBarfometer';
+import { UiState } from '../../hooks/useAlcohlyzer';
 import classes from './ZoneVisor.module.css';
 
 interface ZoneVisorProps {
@@ -30,7 +30,7 @@ export function ZoneVisor({ state, measuredZone }: ZoneVisorProps) {
     if (state !== UiState.RESULT || !measuredZone) return '';
     const key = `result.${measuredZone.status.toLowerCase()}`;
     const phrases = t(key, { returnObjects: true });
-    return Array.isArray(phrases) ? pickRandom(phrases) : (phrases as string);
+    return Array.isArray(phrases) ? pickRandom(phrases as string[]) : (phrases as unknown as string);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [measuredZone, state, i18n.language]);
 

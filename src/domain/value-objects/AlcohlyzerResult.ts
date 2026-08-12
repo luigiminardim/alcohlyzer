@@ -1,7 +1,7 @@
 import { Intensity } from "./Intensity";
 import { IntensityZone } from "./IntensityZone";
 
-export class BarfometerResult {
+export class AlcohlyzerResult {
   constructor(public readonly intensity: Intensity) {}
 
   get zone(): IntensityZone {

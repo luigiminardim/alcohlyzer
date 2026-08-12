@@ -1,13 +1,13 @@
-import type { BarfometerSession } from '../domain/entities/BarfometerSession';
+import type { AlcohlyzerSession } from '../domain/entities/AlcohlyzerSession';
 
 /**
  * Use case: Resets the game state after a result has been shown.
  *
  * Responsibilities:
- * - Reset the BarfometerSession state machine
+ * - Reset the AlcohlyzerSession state machine
  */
 export class ResetSessionUseCase {
-  constructor(private readonly session: BarfometerSession) {}
+  constructor(private readonly session: AlcohlyzerSession) {}
 
   execute(): void {
     this.session.reset();

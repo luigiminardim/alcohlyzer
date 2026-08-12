@@ -1,8 +1,8 @@
 import type { StoragePort } from '../../domain/ports/StoragePort';
 import { IntensityZone, INTENSITY_ZONES } from '../../domain/value-objects/IntensityZone';
 
-const ZONE_STORAGE_KEY = 'barfometer_preset_zone';
-const LANG_STORAGE_KEY = 'barfometer_language';
+const ZONE_STORAGE_KEY = 'alcohlyzer_preset_zone';
+const LANG_STORAGE_KEY = 'alcohlyzer_language';
 
 /**
  * Adapter that implements StoragePort using window.localStorage.

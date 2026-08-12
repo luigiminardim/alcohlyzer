@@ -1,6 +1,6 @@
 import { createTheme, rem } from '@mantine/core';
 
-export const barfometerTheme = createTheme({
+export const alcohlyzerTheme = createTheme({
   primaryColor: 'dark',
   fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
   defaultRadius: 'md',

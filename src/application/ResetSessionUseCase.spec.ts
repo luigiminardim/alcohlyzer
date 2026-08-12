@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { ResetSessionUseCase } from "./ResetSessionUseCase";
 import {
-  BarfometerSession,
+  AlcohlyzerSession,
   SessionStatus,
-} from "../domain/entities/BarfometerSession";
+} from "../domain/entities/AlcohlyzerSession";
 import { IntensityZone } from "../domain/value-objects/IntensityZone";
 import { Intensity } from "../domain/value-objects/Intensity";
-import { BarfometerResult } from "../domain/value-objects/BarfometerResult";
+import { AlcohlyzerResult } from "../domain/value-objects/AlcohlyzerResult";
 import type {
   MeasurePort,
   PortMeasureEvent,
@@ -14,7 +14,7 @@ import type {
 import { Observable } from "rxjs";
 
 describe("ResetSessionUseCase", () => {
-  let session: BarfometerSession;
+  let session: AlcohlyzerSession;
   let useCase: ResetSessionUseCase;
 
   beforeEach(() => {
@@ -22,7 +22,7 @@ describe("ResetSessionUseCase", () => {
       listenMeasure: () => new Observable<PortMeasureEvent>(),
       stopMeasure: () => {},
     };
-    session = new BarfometerSession(mockPort, IntensityZone.MID_ZONE);
+    session = new AlcohlyzerSession(mockPort, IntensityZone.MID_ZONE);
     useCase = new ResetSessionUseCase(session);
   });
 
@@ -33,7 +33,7 @@ describe("ResetSessionUseCase", () => {
     // forcefully change state to test reset
     (session as any)._status = SessionStatus.RESULT;
     (session as any)._targetZone = IntensityZone.MID_ZONE;
-    (session as any)._result = new BarfometerResult(Intensity.fromPercent(100));
+    (session as any)._result = new AlcohlyzerResult(Intensity.fromPercent(100));
 
     expect(session.state.status).toBe(SessionStatus.RESULT);
 

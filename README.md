@@ -1,4 +1,4 @@
-# Barfometer 🤮📊
+# Alcohlyzer 🍺📊
 
 **The ultimate wedding party breathalyzer game.**
 

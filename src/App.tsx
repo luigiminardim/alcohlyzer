@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Button, Stack, Title, Text, Container } from '@mantine/core';
-import { useBarfometer, UiState } from './presentation/hooks/useBarfometer';
+import { useAlcohlyzer, UiState } from './presentation/hooks/useAlcohlyzer';
 import { Gauge } from './presentation/components/Gauge/Gauge';
 import { LanguageToggle } from './presentation/components/LanguageToggle/LanguageToggle';
 
@@ -15,7 +15,7 @@ function App() {
     setZone,
     startTest,
     reset,
-  } = useBarfometer();
+  } = useAlcohlyzer();
 
   let buttonLabel = t('action.start');
   let buttonAction = startTest;

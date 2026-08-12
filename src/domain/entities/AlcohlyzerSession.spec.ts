@@ -1,28 +1,28 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { BarfometerSession, SessionStatus } from './BarfometerSession';
+import { AlcohlyzerSession, SessionStatus } from './AlcohlyzerSession';
 import { IntensityZone } from '../value-objects/IntensityZone';
 import type { MeasurePort, PortMeasureEvent } from '../ports/MeasurePort';
 import { Observable, Subject } from 'rxjs';
 
-describe('BarfometerSession', () => {
+describe('AlcohlyzerSession', () => {
   describe('Initialization', () => {
     it('should start in IDLE state with default LOW_ZONE target', () => {
       const mockPort: MeasurePort = { listenMeasure: () => new Observable<PortMeasureEvent>(), stopMeasure: () => {} };
-      const session = new BarfometerSession(mockPort);
+      const session = new AlcohlyzerSession(mockPort);
       expect(session.state.status).toBe(SessionStatus.IDLE);
       expect(session.targetZone).toBe(IntensityZone.LOW_ZONE);
     });
 
     it('should initialize target zone if passed in constructor', () => {
       const mockPort: MeasurePort = { listenMeasure: () => new Observable<PortMeasureEvent>(), stopMeasure: () => {} };
-      const session = new BarfometerSession(mockPort, IntensityZone.HIGH_ZONE);
+      const session = new AlcohlyzerSession(mockPort, IntensityZone.HIGH_ZONE);
       expect(session.state.status).toBe(SessionStatus.IDLE);
       expect(session.targetZone).toBe(IntensityZone.HIGH_ZONE);
     });
 
     it('should allow setting target zone while IDLE', () => {
       const mockPort: MeasurePort = { listenMeasure: () => new Observable<PortMeasureEvent>(), stopMeasure: () => {} };
-      const session = new BarfometerSession(mockPort);
+      const session = new AlcohlyzerSession(mockPort);
       session.setTarget(IntensityZone.MID_ZONE);
       expect(session.targetZone).toBe(IntensityZone.MID_ZONE);
     });
@@ -32,7 +32,7 @@ describe('BarfometerSession', () => {
         listenMeasure: () => new Observable<PortMeasureEvent>(),
         stopMeasure: () => {}
       };
-      const session = new BarfometerSession(mockPort, IntensityZone.LOW_ZONE);
+      const session = new AlcohlyzerSession(mockPort, IntensityZone.LOW_ZONE);
       session.startTest();
       expect(() => session.setTarget(IntensityZone.HIGH_ZONE)).toThrow(/Cannot set target zone/);
     });
@@ -48,7 +48,7 @@ describe('BarfometerSession', () => {
         listenMeasure: () => new Observable<PortMeasureEvent>(),
         stopMeasure: () => {}
       };
-      const session = new BarfometerSession(mockPort, IntensityZone.LOW_ZONE);
+      const session = new AlcohlyzerSession(mockPort, IntensityZone.LOW_ZONE);
       session.startTest();
       expect(session.state.status).toBe(SessionStatus.TESTING);
     });
@@ -60,7 +60,7 @@ describe('BarfometerSession', () => {
         listenMeasure: () => subject.asObservable(),
         stopMeasure: () => {}
       };
-      const session = new BarfometerSession(mockPort, IntensityZone.HIGH_ZONE);
+      const session = new AlcohlyzerSession(mockPort, IntensityZone.HIGH_ZONE);
 
       const observable = session.startTest();
       let lastEvent: any = null;
@@ -87,7 +87,7 @@ describe('BarfometerSession', () => {
         listenMeasure: () => new Observable<PortMeasureEvent>(),
         stopMeasure: stopMeasureSpy,
       };
-      const session = new BarfometerSession(mockPort);
+      const session = new AlcohlyzerSession(mockPort);
       session.startTest();
       expect(session.state.status).toBe(SessionStatus.TESTING);
 

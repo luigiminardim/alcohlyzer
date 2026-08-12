@@ -4,7 +4,7 @@ import {
   IntensityZone,
   ZoneStatus,
 } from "../../../domain/value-objects/IntensityZone";
-import { UiState } from "../../hooks/useBarfometer";
+import { UiState } from "../../hooks/useAlcohlyzer";
 import { useGaugeAnimation } from "../../hooks/useGaugeAnimation";
 import { GaugeNeedle } from "./GaugeNeedle";
 import { GaugeZone } from "./GaugeZone";

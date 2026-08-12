@@ -1,20 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { SetZoneUseCase } from "./SetZoneUseCase";
 import {
-  BarfometerSession,
+  AlcohlyzerSession,
   SessionStatus,
-} from "../domain/entities/BarfometerSession";
+} from "../domain/entities/AlcohlyzerSession";
 import { IntensityZone } from "../domain/value-objects/IntensityZone";
 import type { StoragePort } from "../domain/ports/StoragePort";
 
 describe("SetZoneUseCase", () => {
-  let session: BarfometerSession;
+  let session: AlcohlyzerSession;
   let mockStorage: StoragePort;
   let useCase: SetZoneUseCase;
 
   beforeEach(() => {
     const mockPort = { listenMeasure: vi.fn(), stopMeasure: vi.fn() } as any;
-    session = new BarfometerSession(mockPort);
+    session = new AlcohlyzerSession(mockPort);
     mockStorage = {
       savePresetZone: vi.fn(),
       loadPresetZone: vi.fn(),

@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import {
-  BarfometerSession,
-} from "../../domain/entities/BarfometerSession";
+  AlcohlyzerSession,
+} from "../../domain/entities/AlcohlyzerSession";
 import { LocalStorageAdapter } from "../../infrastructure/adapters/LocalStorageAdapter";
 import { WebAudioMicrophoneAdapter } from "../../infrastructure/adapters/WebAudioMicrophoneAdapter";
 import { SetZoneUseCase } from "../../application/SetZoneUseCase";
@@ -9,7 +9,7 @@ import { TestBlowUseCase } from "../../application/TestBlowUseCase";
 import { ResetSessionUseCase } from "../../application/ResetSessionUseCase";
 import { IntensityZone } from "../../domain/value-objects/IntensityZone";
 import type { Intensity } from "../../domain/value-objects/Intensity";
-import type { BarfometerMeasureEvent } from "../../domain/entities/BarfometerSession";
+import type { AlcohlyzerMeasureEvent } from "../../domain/entities/AlcohlyzerSession";
 import { Subscription } from "rxjs";
 
 export enum UiState {
@@ -18,14 +18,14 @@ export enum UiState {
   RESULT = "RESULT",
 }
 
-export function useBarfometer() {
+export function useAlcohlyzer() {
   const storage = useMemo(() => new LocalStorageAdapter(), []);
   const micAdapter = useMemo(() => new WebAudioMicrophoneAdapter(), []);
 
-  const sessionRef = useRef<BarfometerSession | null>(null);
+  const sessionRef = useRef<AlcohlyzerSession | null>(null);
   if (!sessionRef.current) {
     const savedZone = storage.loadPresetZone() || undefined;
-    sessionRef.current = new BarfometerSession(micAdapter, savedZone);
+    sessionRef.current = new AlcohlyzerSession(micAdapter, savedZone);
   }
   const session = sessionRef.current;
 
@@ -85,7 +85,7 @@ export function useBarfometer() {
       setUiState(UiState.LISTENING);
 
       subscriptionRef.current = observable.subscribe({
-        next: (event: BarfometerMeasureEvent) => {
+        next: (event: AlcohlyzerMeasureEvent) => {
           setCurrentIntensity(event.result.intensity.percent);
 
           if (event.isFinal) {
@@ -109,7 +109,7 @@ export function useBarfometer() {
       setMicError(err instanceof Error ? err.message : String(err));
       setUiState(UiState.IDLE);
     }
-  }, [testBlowUseCase, uiState]);
+  }, [testBlowUseCase]);
 
 
 

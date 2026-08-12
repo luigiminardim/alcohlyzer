@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { TestBlowUseCase } from './TestBlowUseCase';
-import { BarfometerSession, SessionStatus } from '../domain/entities/BarfometerSession';
+import { AlcohlyzerSession, SessionStatus } from '../domain/entities/AlcohlyzerSession';
 import { IntensityZone } from '../domain/value-objects/IntensityZone';
 import type { MeasurePort, PortMeasureEvent } from '../domain/ports/MeasurePort';
 import { Subject } from 'rxjs';
@@ -9,7 +9,7 @@ describe('TestBlowUseCase', () => {
   it('should return an observable that maps to fake percent and delegates to session', () => {
     const subject = new Subject<PortMeasureEvent>();
     const mockPort: MeasurePort = { listenMeasure: () => subject.asObservable(), stopMeasure: () => {} };
-    const session = new BarfometerSession(mockPort, IntensityZone.HIGH_ZONE);
+    const session = new AlcohlyzerSession(mockPort, IntensityZone.HIGH_ZONE);
     const useCase = new TestBlowUseCase(session);
 
     const observable = useCase.execute();

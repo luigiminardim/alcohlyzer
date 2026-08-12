@@ -5,15 +5,15 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/barfometer/',
+  base: '/alcohlyzer/',
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Barfometer',
-        short_name: 'Barfometer',
+        name: 'Alcohlyzer',
+        short_name: 'Alcohlyzer',
         description: 'The ultimate wedding party breathalyzer game',
         theme_color: '#ffffff',
         background_color: '#ffffff',

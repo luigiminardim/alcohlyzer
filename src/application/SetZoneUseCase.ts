@@ -1,4 +1,4 @@
-import type { BarfometerSession } from '../domain/entities/BarfometerSession';
+import type { AlcohlyzerSession } from '../domain/entities/AlcohlyzerSession';
 import type { IntensityZone } from '../domain/value-objects/IntensityZone';
 import type { StoragePort } from '../domain/ports/StoragePort';
 
@@ -6,12 +6,12 @@ import type { StoragePort } from '../domain/ports/StoragePort';
  * Use case: Officer sets the preset zone for the next test.
  *
  * Responsibilities:
- * - Update the aggregate root (BarfometerSession)
+ * - Update the aggregate root (AlcohlyzerSession)
  * - Persist the chosen zone so it survives page reloads
  */
 export class SetZoneUseCase {
   constructor(
-    private readonly session: BarfometerSession,
+    private readonly session: AlcohlyzerSession,
     private readonly storage: StoragePort,
   ) {}
 
