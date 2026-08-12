@@ -12,6 +12,7 @@ const BLOW_DURATION_GOAL_MS = 2000;
  */
 const BLOW_VOLUME_THRESHOLD = 30; // Minimum average volume (lowered from 30)
 const BLOW_LOW_FREQ_THRESHOLD = 150; // High energy in lowest frequency bins (the "puff" sound)
+const BLOW_LOW_FREQ_RATIO_THRESHOLD = 0.04; // At least 4% of total energy must be in low frequencies
 
 /** Number of low-frequency bins to sum for the "puff" signature. */
 const LOW_FREQ_BIN_COUNT = 3;
@@ -181,11 +182,16 @@ function detectBlow(frequencyData: Uint8Array): boolean {
     }
   }
   const averageVolume = totalEnergy / length;
+  const lowFreqRatio = totalEnergy > 0 ? lowFreqEnergy / totalEnergy : 0;
+
   const isBlowing =
     averageVolume >= BLOW_VOLUME_THRESHOLD &&
-    lowFreqEnergy >= BLOW_LOW_FREQ_THRESHOLD;
+    lowFreqEnergy >= BLOW_LOW_FREQ_THRESHOLD &&
+    lowFreqRatio >= BLOW_LOW_FREQ_RATIO_THRESHOLD;
 
-  console.info(JSON.stringify({ isBlowing, averageVolume, lowFreqEnergy }));
+  console.info(
+    JSON.stringify({ isBlowing, averageVolume, lowFreqEnergy, lowFreqRatio }),
+  );
   return isBlowing;
 }
 
