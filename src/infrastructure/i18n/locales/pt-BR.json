@@ -5,9 +5,42 @@
     "high": "Bêbado"
   },
   "result": {
-    "low": "Tá limpo!",
-    "mid": "Alcolizado!",
-    "high": "BÊBADO!"
+    "low": [
+      "SÓ NA ÁGUA",
+      "MAIS PURO QUE ÁGUA BENTA",
+      "SECO COMO BISCOITO",
+      "ZERO VÍRGULA NADA",
+      "PEDRA SÓBRIA",
+      "NEM CHEIROU",
+      "ABSTEMIO COMPLETO",
+      "LIMPO COMO ASSOBIO",
+      "ÁGUA COM GÁS, NA PIOR",
+      "MAIS LIMPO QUE HOSPITAL"
+    ],
+    "mid": [
+      "TOMOU UMAS",
+      "MEIO TORTO JÁ",
+      "NO LIMITE",
+      "BEBEU SIM, MAS TÁ DE PÉ",
+      "ESQUENTANDO O MOTOR",
+      "DÁ PRA BEBER MAIS",
+      "TÁ ALTO SÓ",
+      "ANIMADO MAS CONSCIENTE",
+      "NO ESQUENTA",
+      "MEIO TORTO MAS TÁ DE PÉ"
+    ],
+    "high": [
+      "MUITO MAMADO",
+      "TOMOU UM PORRE",
+      "TROCANDO AS PERNAS",
+      "ENCHEU A CARA",
+      "CHAPADO TOTAL",
+      "PASSOU DA CONTA MUITO",
+      "NEM SABE O NOME",
+      "BAGAÇO TOTAL",
+      "100% ATINGIDO",
+      "PASSOU DOS LIMITES"
+    ]
   },
   "action": {
     "start": "Iniciar Teste",

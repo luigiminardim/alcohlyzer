@@ -5,9 +5,42 @@
     "high": "Drunk"
   },
   "result": {
-    "low": "You're clean!",
-    "mid": "Tipsy!",
-    "high": "DRUNK!"
+    "low": [
+      "STONE COLD SOBER",
+      "PURE AS HOLY WATER",
+      "NOT EVEN A SIP",
+      "DRY AS A BONE",
+      "SQUEAKY CLEAN",
+      "ZERO POINT NOTHING",
+      "SOBER AS A JUDGE",
+      "WATER DRINKER",
+      "STRAIGHT EDGE",
+      "SAFE TO DRIVE"
+    ],
+    "mid": [
+      "HAD A FEW",
+      "FEELING IT",
+      "SLIGHTLY WOBBLY",
+      "TIPSY BUSINESS",
+      "ONE TOO MANY",
+      "WARMING UP",
+      "BORDERLINE",
+      "LOOSENED UP",
+      "HALFWAY THERE",
+      "BUZZING ALONG"
+    ],
+    "high": [
+      "TOTALLY WASTED",
+      "LIGHTS OUT",
+      "HAMMERED",
+      "GONE FISHING",
+      "ABSOLUTELY SMASHED",
+      "CALL A CAB",
+      "FLOOR IS MOVING",
+      "FORGOT YOUR NAME",
+      "FULL SEND",
+      "LEGENDARY NIGHT"
+    ]
   },
   "action": {
     "start": "Start Test",
