@@ -97,6 +97,7 @@ export function useAlcohlyzer() {
         },
         error: (err) => {
           console.error("Failed to execute test:", err);
+          resetSessionUseCase.execute();
           setMicError(err instanceof Error ? err.message : String(err));
           setUiState(UiState.IDLE);
         },
@@ -106,10 +107,11 @@ export function useAlcohlyzer() {
       });
     } catch (err) {
       console.error("Failed to start test:", err);
+      resetSessionUseCase.execute();
       setMicError(err instanceof Error ? err.message : String(err));
       setUiState(UiState.IDLE);
     }
-  }, [testBlowUseCase]);
+  }, [testBlowUseCase, resetSessionUseCase]);
 
 
 
