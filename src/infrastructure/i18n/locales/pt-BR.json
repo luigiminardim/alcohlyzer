@@ -1,7 +1,7 @@
 {
   "gauge": {
     "low": "Limpo",
-    "mid": "Alcolizado",
+    "mid": "Alcoolizado",
     "high": "Bêbado"
   },
   "result": {
@@ -12,7 +12,7 @@
       "ZERO VÍRGULA NADA",
       "PEDRA SÓBRIA",
       "NEM CHEIROU",
-      "ABSTEMIO COMPLETO",
+      "ABSTÊMIO COMPLETO",
       "LIMPO COMO ASSOBIO",
       "ÁGUA COM GÁS, NA PIOR",
       "MAIS LIMPO QUE HOSPITAL"
@@ -56,7 +56,7 @@
     "language": "Idioma"
   },
   "app": {
-    "title": "Barfômetro"
+    "title": "BARfômetro"
   },
   "visor": {
     "selectHint": "Toque duas vezes numa zona para selecionar",
