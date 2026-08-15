@@ -14,18 +14,20 @@ Guidelines for building the Barfometer gauge with SVG and smooth needle animatio
 ```svg
 <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
   <!-- Background arc divided into zones -->
-  <path d="..." fill="green" />   <!-- GREEN zone -->
-  <path d="..." fill="gold" />    <!-- YELLOW zone -->
-  <path d="..." fill="red" />     <!-- RED zone -->
+  <path d="..." fill="none" stroke="#7FA653" />
+  <path d="..." fill="none" stroke="#EBC97F" />
+  <path d="..." fill="none" stroke="#D45F58" />
 
   <!-- Needle (rotates around center) -->
   <line id="needle" x1="100" y1="100" x2="100" y2="20"
-        stroke="#333" stroke-width="3" stroke-linecap="round" />
+        stroke="var(--mantine-color-bright)" stroke-width="3" stroke-linecap="round" />
 
   <!-- Center cap -->
-  <circle cx="100" cy="100" r="6" fill="#333" />
+  <circle cx="100" cy="100" r="6" fill="var(--mantine-color-body)" />
 </svg>
 ```
+
+Runtime components must resolve these values through `src/presentation/zoneColors.ts` so gauge, visor, and notification feedback remain consistent.
 
 ## Needle Rotation
 
@@ -133,7 +135,7 @@ function GaugeNeedle({ angle }: { angle: number }) {
       y1="100"
       x2="100"
       y2="20"
-      stroke="#333"
+      stroke="var(--mantine-color-bright)"
       strokeWidth="3"
       strokeLinecap="round"
       style={{

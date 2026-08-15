@@ -21,7 +21,7 @@ Use **Mantine UI** (`@mantine/core`, `@mantine/hooks`, `@mantine/notifications`)
 - **Rich hooks library**: `@mantine/hooks` provides `useTimeout`, `useMediaQuery`, `useClickOutside`, etc.
 - **Accessible by default**: Components handle ARIA attributes automatically
 - **Tree-shakeable**: Only ships code for components we import
-- **PostCSS theming**: Centralized theme via `MantineProvider` + `createTheme()`
+- **PostCSS theming**: Centralized dark theme via `MantineProvider`, `createTheme()`, and a CSS variables resolver; components consume semantic theme variables
 
 ### Negative
 
@@ -43,7 +43,9 @@ Use **Mantine UI** (`@mantine/core`, `@mantine/hooks`, `@mantine/notifications`)
 ## What Remains Custom
 
 - **SVG Gauge**: No UI library provides a breathalyzer gauge. Fully custom SVG + CSS
-- **Wobble Animation**: Custom `requestAnimationFrame` logic
+- **Brand theme**: Product-specific palette, dark canvas, surface, text, typography, sizing, and radii remain theme overrides
+- **Zone colors**: Gauge, result visor, and notifications share the custom colors defined in `src/presentation/zoneColors.ts`
+- **Needle animation**: Current microphone progress uses a direct CSS transition; the previously proposed wobble animation is not implemented
 - **Blow Detection**: Custom Web Audio API integration
 
 ## Alternatives Considered

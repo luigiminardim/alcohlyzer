@@ -15,13 +15,17 @@ Guidelines for using Mantine UI in the Barfometer project — theming, notificat
 // src/main.tsx
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
-import { barfometerTheme } from '@/presentation/theme';
+import { alcohlyzerCssVariablesResolver, alcohlyzerTheme } from '@/presentation/theme';
 
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <MantineProvider theme={barfometerTheme}>
+  <MantineProvider
+    defaultColorScheme="dark"
+    theme={alcohlyzerTheme}
+    cssVariablesResolver={alcohlyzerCssVariablesResolver}
+  >
     <Notifications position="top-center" autoClose={2000} />
     <App />
   </MantineProvider>,
@@ -30,25 +34,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
 ## Theme Customization (`src/presentation/theme.ts`)
 
-```typescript
-import { createTheme } from '@mantine/core';
+The approved theme is defined in `src/presentation/theme.ts`:
 
-export const barfometerTheme = createTheme({
-  primaryColor: 'dark',
-  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-  defaultRadius: 'md',
-  colors: {
-    // Custom colors can be added here if needed
-  },
-  components: {
-    Notification: {
-      defaultProps: {
-        withCloseButton: false,
-      },
-    },
-  },
-});
-```
+- `brand` is the custom primary color tuple.
+- Dark canvas is `#121824`, default surfaces are `#1C2637`, and text is `#F3EFE5`.
+- Components should consume Mantine semantic variables rather than repeating these values.
+- Zone colors are centralized separately in `src/presentation/zoneColors.ts` because they represent domain feedback, not primary UI actions.
 
 ## Notifications (Toast Replacement)
 
