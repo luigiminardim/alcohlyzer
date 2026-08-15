@@ -11,7 +11,7 @@ function App() {
 
   let buttonLabel = t('action.start');
   let buttonAction = startTest;
-  let buttonColor = presetZone ? 'blue' : 'dark';
+  let buttonColor: 'red' | undefined;
   let buttonDisabled = !presetZone && state === UiState.IDLE;
   let buttonVariant = 'filled';
 
@@ -23,7 +23,6 @@ function App() {
   } else if (state === UiState.RESULT) {
     buttonLabel = t('action.testAgain');
     buttonAction = reset;
-    buttonColor = 'dark';
   }
 
   return (
@@ -42,9 +41,7 @@ function App() {
       >
         <Stack align="center" gap="xl" w="100%">
           <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-            <Title order={1} c="white">
-              {t('app.title')}
-            </Title>
+            <Title order={1}>{t('app.title')}</Title>
           </div>
 
           <Gauge

@@ -19,13 +19,13 @@ export const GaugeNeedle = memo(function GaugeNeedle({ angle }: GaugeNeedleProps
         y1="100"
         x2="100"
         y2="20"
-        stroke="#fff"
+        stroke="var(--mantine-color-bright)"
         strokeWidth="4"
         strokeLinecap="round"
       />
       {/* Center Pivot */}
-      <circle cx="100" cy="100" r="10" fill="#2c2e33" />
-      <circle cx="100" cy="100" r="4" fill="#fff" />
+      <circle cx="100" cy="100" r="10" fill="var(--mantine-color-body)" />
+      <circle cx="100" cy="100" r="4" fill="var(--mantine-color-bright)" />
     </g>
   );
 });

@@ -15,8 +15,9 @@ export default defineConfig({
         name: 'Alcohlyzer',
         short_name: 'Alcohlyzer',
         description: 'The ultimate wedding party breathalyzer game',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
+        // Static manifest colors mirror the custom dark app canvas.
+        theme_color: '#121824',
+        background_color: '#121824',
         display: 'standalone',
         orientation: 'portrait',
         icons: [

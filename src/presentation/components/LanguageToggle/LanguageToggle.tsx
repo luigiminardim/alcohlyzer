@@ -15,14 +15,13 @@ export function LanguageToggle() {
       size="xl"
       radius="xl"
       variant="filled"
-      color="dark"
       title="Toggle Language"
       style={{
         position: 'fixed',
         top: 20,
         right: 20,
         zIndex: 50,
-        boxShadow: '0 2px 10px rgba(0,0,0,0.5)',
+        boxShadow: 'var(--mantine-shadow-md)',
       }}
     >
       <span style={{ fontSize: '1.2rem' }}>{i18n.language === 'en' ? '🇺🇸' : '🇧🇷'}</span>
