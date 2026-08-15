@@ -6,6 +6,7 @@ import { useGaugeAnimation } from '../../hooks/useGaugeAnimation';
 import { GaugeNeedle } from './GaugeNeedle';
 import { GaugeZone } from './GaugeZone';
 import { ZoneVisor } from '../ZoneVisor/ZoneVisor';
+import { getZoneColor } from '../../zoneColors';
 import classes from './Gauge.module.css';
 
 interface GaugeProps {
@@ -21,16 +22,10 @@ export function Gauge({ state, measuredZone, currentIntensity, onZonePreset }: G
   const handleZoneDoubleTap = (zone: IntensityZone) => {
     if (state === UiState.IDLE) {
       onZonePreset(zone);
-      const color =
-        zone.status === ZoneStatus.LOW
-          ? 'green'
-          : zone.status === ZoneStatus.MID
-            ? 'yellow'
-            : 'red';
       notifications.show({
         id: 'zone-preset',
         message: '',
-        color,
+        color: getZoneColor(zone.status),
         autoClose: 500,
         withCloseButton: false,
         styles: {
@@ -83,7 +78,14 @@ export function Gauge({ state, measuredZone, currentIntensity, onZonePreset }: G
           onDoubleTap={handleZoneDoubleTap}
         />
 
-        <line x1="15" y1="100" x2="188" y2="100" stroke="#495057" strokeWidth="2" />
+        <line
+          x1="15"
+          y1="100"
+          x2="188"
+          y2="100"
+          stroke="var(--mantine-color-default-border)"
+          strokeWidth="2"
+        />
 
         <GaugeNeedle angle={needleAngle} />
       </svg>

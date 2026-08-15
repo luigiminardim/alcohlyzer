@@ -1,21 +1,13 @@
-import { useMemo } from 'react';
+import { useMemo, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IntensityZone, getZoneColor } from '../../../domain/value-objects/IntensityZone';
+import { IntensityZone } from '../../../domain/value-objects/IntensityZone';
 import { UiState } from '../../hooks/useAlcohlyzer';
+import { getZoneColor } from '../../zoneColors';
 import classes from './ZoneVisor.module.css';
 
 interface ZoneVisorProps {
   state: UiState;
   measuredZone: IntensityZone | null;
-}
-
-// Helper to convert hex to rgb string for CSS vars
-function hexToRgb(hex: string): string {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  if (result && result[1] && result[2] && result[3]) {
-    return `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`;
-  }
-  return '255, 255, 255';
 }
 
 function pickRandom(phrases: string[]): string {
@@ -38,7 +30,7 @@ export function ZoneVisor({ state, measuredZone }: ZoneVisorProps) {
 
   let content = '';
   let className = classes.visor;
-  let colorRgb = '255, 255, 255'; // default
+  let colorStyle: CSSProperties | undefined;
 
   if (state === UiState.LISTENING) {
     content = t('visor.listening');
@@ -46,20 +38,15 @@ export function ZoneVisor({ state, measuredZone }: ZoneVisorProps) {
   } else if (state === UiState.RESULT && measuredZone) {
     content = resultPhrase;
     className = `${classes.visor} ${classes.visorResult}`;
-    colorRgb = hexToRgb(getZoneColor(measuredZone));
+    colorStyle = {
+      '--zone-color': getZoneColor(measuredZone.status),
+    } as CSSProperties;
   }
 
   return (
     <div className={classes.visorContainer}>
       {content && (
-        <div
-          className={className}
-          style={
-            {
-              '--zone-color-rgb': colorRgb,
-            } as React.CSSProperties
-          }
-        >
+        <div className={className} style={colorStyle}>
           {content}
         </div>
       )}

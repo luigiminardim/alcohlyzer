@@ -12,30 +12,23 @@
   font-size: 1.1rem;
   text-align: center;
   transition: all 0.3s ease;
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--mantine-color-default);
+  border: 1px solid var(--mantine-color-default-border);
   color: var(--mantine-color-dimmed);
-}
-
-.visorHasZone {
-  background-color: rgba(var(--zone-color-rgb), 0.15);
-  border: 1px solid rgba(var(--zone-color-rgb), 0.5);
-  color: rgb(var(--zone-color-rgb));
-  box-shadow: 0 0 10px rgba(var(--zone-color-rgb), 0.2);
 }
 
 .visorListening {
   animation: pulse-listening 1s infinite alternate ease-in-out;
-  color: var(--mantine-color-blue-4);
-  border-color: var(--mantine-color-blue-6);
-  background-color: rgba(34, 139, 230, 0.1); /* Mantine blue-6 rgba */
+  color: var(--mantine-color-blue-light-color);
+  border-color: var(--mantine-color-blue-outline);
+  background-color: var(--mantine-color-blue-light);
 }
 
 .visorResult {
-  background-color: rgba(var(--zone-color-rgb), 0.2);
-  border: 2px solid rgb(var(--zone-color-rgb));
-  color: rgb(var(--zone-color-rgb));
-  box-shadow: 0 0 20px rgba(var(--zone-color-rgb), 0.6);
+  background-color: color-mix(in srgb, var(--zone-color) 20%, transparent);
+  border: 2px solid var(--zone-color);
+  color: var(--zone-color);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--zone-color) 60%, transparent);
   animation: pulse-result 2s infinite ease-in-out;
   font-size: 1.3rem;
   padding: 12px 32px;

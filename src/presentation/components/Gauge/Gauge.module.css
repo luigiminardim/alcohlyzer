@@ -17,37 +17,43 @@
 .gaugeSvg {
   width: 100%;
   height: auto;
-  filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 10px 15px color-mix(in srgb, var(--mantine-color-black) 30%, transparent));
 }
 
 .zonePath {
   cursor: pointer;
   transition:
     opacity 0.2s ease,
+    filter 0.2s ease,
     stroke-width 0.2s ease;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
-.zonePath:hover,
-.zonePath:active {
+.zonePath:not(.zoneResult):hover,
+.zonePath:not(.zoneResult):active {
   opacity: 1;
+  filter: brightness(1.15);
 }
 
 .zoneResult {
   opacity: 1;
   stroke-width: 36;
-  filter: brightness(1.5) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+  filter: brightness(1.5)
+    drop-shadow(0 0 8px color-mix(in srgb, var(--mantine-color-white) 50%, transparent));
   animation: pulse-glow 2s infinite ease-in-out;
 }
 
 @keyframes pulse-glow {
   0% {
-    filter: brightness(1.5) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+    filter: brightness(1.5)
+      drop-shadow(0 0 8px color-mix(in srgb, var(--mantine-color-white) 50%, transparent));
   }
   50% {
-    filter: brightness(1.8) drop-shadow(0 0 16px rgba(255, 255, 255, 0.8));
+    filter: brightness(1.8)
+      drop-shadow(0 0 16px color-mix(in srgb, var(--mantine-color-white) 80%, transparent));
   }
   100% {
-    filter: brightness(1.5) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+    filter: brightness(1.5)
+      drop-shadow(0 0 8px color-mix(in srgb, var(--mantine-color-white) 50%, transparent));
   }
 }

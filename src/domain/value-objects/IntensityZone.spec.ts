@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { IntensityZone, ZoneStatus, getZoneColor } from './IntensityZone';
+import { IntensityZone, ZoneStatus } from './IntensityZone';
 import { Intensity } from './Intensity';
 
 describe('IntensityZone', () => {
@@ -60,14 +60,6 @@ describe('IntensityZone', () => {
       const i3 = Intensity.fromPercent(80);
       expect(i1.isEquals(i2)).toBe(true);
       expect(i1.isEquals(i3)).toBe(false);
-    });
-  });
-
-  describe('getZoneColor()', () => {
-    it('should return correct colors for each zone', () => {
-      expect(getZoneColor(IntensityZone.LOW_ZONE)).toBe('#40c057');
-      expect(getZoneColor(IntensityZone.MID_ZONE)).toBe('#fab005');
-      expect(getZoneColor(IntensityZone.HIGH_ZONE)).toBe('#fa5252');
     });
   });
 });

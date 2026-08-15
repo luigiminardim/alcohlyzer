@@ -1,5 +1,6 @@
 import { memo } from 'react';
-import { IntensityZone, getZoneColor } from '../../../domain/value-objects/IntensityZone';
+import { IntensityZone } from '../../../domain/value-objects/IntensityZone';
+import { getZoneColor } from '../../zoneColors';
 import classes from './Gauge.module.css';
 
 interface GaugeZoneProps {
@@ -15,7 +16,7 @@ export const GaugeZone = memo(function GaugeZone({
   isResult,
   onDoubleTap,
 }: GaugeZoneProps) {
-  const color = getZoneColor(zone);
+  const color = getZoneColor(zone.status);
 
   return (
     <path

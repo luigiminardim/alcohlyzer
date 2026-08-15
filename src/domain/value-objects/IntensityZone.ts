@@ -40,14 +40,3 @@ export const INTENSITY_ZONES = [
   IntensityZone.MID_ZONE,
   IntensityZone.HIGH_ZONE,
 ];
-
-export function getZoneColor(zone: IntensityZone): string {
-  switch (zone.status) {
-    case ZoneStatus.LOW:
-      return '#40c057'; // Green
-    case ZoneStatus.MID:
-      return '#fab005'; // Yellow
-    case ZoneStatus.HIGH:
-      return '#fa5252'; // Red
-  }
-}
