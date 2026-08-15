@@ -6,16 +6,8 @@ import { LanguageToggle } from './presentation/components/LanguageToggle/Languag
 
 function App() {
   const { t } = useTranslation();
-  const {
-    state,
-    measuredZone,
-    currentIntensity,
-    micError,
-    presetZone,
-    setZone,
-    startTest,
-    reset,
-  } = useAlcohlyzer();
+  const { state, measuredZone, currentIntensity, micError, presetZone, setZone, startTest, reset } =
+    useAlcohlyzer();
 
   let buttonLabel = t('action.start');
   let buttonAction = startTest;
@@ -37,12 +29,22 @@ function App() {
   return (
     <>
       <LanguageToggle />
-      
-      <Container size="sm" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+
+      <Container
+        size="sm"
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         <Stack align="center" gap="xl" w="100%">
-          
           <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-            <Title order={1} c="white">{t('app.title')}</Title>
+            <Title order={1} c="white">
+              {t('app.title')}
+            </Title>
           </div>
 
           <Gauge
@@ -52,7 +54,16 @@ function App() {
             onZonePreset={setZone}
           />
 
-          <div style={{ minHeight: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '2rem', width: '100%' }}>
+          <div
+            style={{
+              minHeight: '80px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: '2rem',
+              width: '100%',
+            }}
+          >
             <Button
               size="xl"
               color={buttonColor}
@@ -71,10 +82,8 @@ function App() {
               Microphone error: {micError}
             </Text>
           )}
-
         </Stack>
       </Container>
-
     </>
   );
 }

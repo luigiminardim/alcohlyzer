@@ -1,13 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { SetZoneUseCase } from "./SetZoneUseCase";
-import {
-  AlcohlyzerSession,
-  SessionStatus,
-} from "../domain/entities/AlcohlyzerSession";
-import { IntensityZone } from "../domain/value-objects/IntensityZone";
-import type { StoragePort } from "../domain/ports/StoragePort";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { SetZoneUseCase } from './SetZoneUseCase';
+import { AlcohlyzerSession, SessionStatus } from '../domain/entities/AlcohlyzerSession';
+import { IntensityZone } from '../domain/value-objects/IntensityZone';
+import type { StoragePort } from '../domain/ports/StoragePort';
 
-describe("SetZoneUseCase", () => {
+describe('SetZoneUseCase', () => {
   let session: AlcohlyzerSession;
   let mockStorage: StoragePort;
   let useCase: SetZoneUseCase;
@@ -24,7 +21,7 @@ describe("SetZoneUseCase", () => {
     useCase = new SetZoneUseCase(session, mockStorage);
   });
 
-  it("should set the target zone in the session and save it to storage", () => {
+  it('should set the target zone in the session and save it to storage', () => {
     // Given: an idle session and a valid zone
     const targetZone = IntensityZone.HIGH_ZONE;
 

@@ -1,16 +1,18 @@
 ---
 name: i18n-patterns
-description: "Guidelines for implementing EN/PT-BR language support using react-i18next in the Barfometer project."
+description: 'Guidelines for implementing EN/PT-BR language support using react-i18next in the Barfometer project.'
 ---
 
 # i18n (Internationalization) Patterns
 
 ## Purpose
+
 Guidelines for implementing EN/PT-BR language support using react-i18next in the Barfometer project.
 
 ## Setup
 
 ### Initialization (`src/infrastructure/i18n/i18n.ts`)
+
 ```typescript
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
@@ -33,6 +35,7 @@ export default i18n;
 ```
 
 ### Import in entry point
+
 ```typescript
 // src/main.tsx
 import '@/infrastructure/i18n/i18n';
@@ -41,6 +44,7 @@ import '@/infrastructure/i18n/i18n';
 ## Translation Files
 
 ### Structure (namespace-based keys)
+
 ```json
 // locales/en.json
 {
@@ -98,6 +102,7 @@ import '@/infrastructure/i18n/i18n';
 ## Usage in Components
 
 ### `useTranslation` hook
+
 ```tsx
 import { useTranslation } from 'react-i18next';
 
@@ -109,6 +114,7 @@ function ResultDisplay({ zone }: { zone: Zone }) {
 ```
 
 ### With interpolation
+
 ```tsx
 notifications.show({
   message: t('toast.zoneSet', { zone: t(`gauge.${zone.toLowerCase()}`) }),
@@ -118,6 +124,7 @@ notifications.show({
 ## Language Toggle
 
 ### Switching language
+
 ```tsx
 import { useTranslation } from 'react-i18next';
 
@@ -141,11 +148,13 @@ function LanguageToggle() {
 ## Clean Architecture Integration
 
 ### i18n is Infrastructure
+
 - Translation logic lives in `src/infrastructure/i18n/`
 - Domain and application layers do NOT import i18n
 - Domain returns keys/enums; presentation translates them
 
 ### Persisting language preference
+
 ```typescript
 // StoragePort handles persistence
 storage.saveLanguagePreference(language);

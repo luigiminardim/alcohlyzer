@@ -7,21 +7,30 @@ import { Observable, Subject } from 'rxjs';
 describe('AlcohlyzerSession', () => {
   describe('Initialization', () => {
     it('should start in IDLE state with default LOW_ZONE target', () => {
-      const mockPort: MeasurePort = { listenMeasure: () => new Observable<PortMeasureEvent>(), stopMeasure: () => {} };
+      const mockPort: MeasurePort = {
+        listenMeasure: () => new Observable<PortMeasureEvent>(),
+        stopMeasure: () => {},
+      };
       const session = new AlcohlyzerSession(mockPort);
       expect(session.state.status).toBe(SessionStatus.IDLE);
       expect(session.targetZone).toBe(IntensityZone.LOW_ZONE);
     });
 
     it('should initialize target zone if passed in constructor', () => {
-      const mockPort: MeasurePort = { listenMeasure: () => new Observable<PortMeasureEvent>(), stopMeasure: () => {} };
+      const mockPort: MeasurePort = {
+        listenMeasure: () => new Observable<PortMeasureEvent>(),
+        stopMeasure: () => {},
+      };
       const session = new AlcohlyzerSession(mockPort, IntensityZone.HIGH_ZONE);
       expect(session.state.status).toBe(SessionStatus.IDLE);
       expect(session.targetZone).toBe(IntensityZone.HIGH_ZONE);
     });
 
     it('should allow setting target zone while IDLE', () => {
-      const mockPort: MeasurePort = { listenMeasure: () => new Observable<PortMeasureEvent>(), stopMeasure: () => {} };
+      const mockPort: MeasurePort = {
+        listenMeasure: () => new Observable<PortMeasureEvent>(),
+        stopMeasure: () => {},
+      };
       const session = new AlcohlyzerSession(mockPort);
       session.setTarget(IntensityZone.MID_ZONE);
       expect(session.targetZone).toBe(IntensityZone.MID_ZONE);
@@ -30,7 +39,7 @@ describe('AlcohlyzerSession', () => {
     it('should throw if setting target zone when not IDLE', () => {
       const mockPort: MeasurePort = {
         listenMeasure: () => new Observable<PortMeasureEvent>(),
-        stopMeasure: () => {}
+        stopMeasure: () => {},
       };
       const session = new AlcohlyzerSession(mockPort, IntensityZone.LOW_ZONE);
       session.startTest();
@@ -46,7 +55,7 @@ describe('AlcohlyzerSession', () => {
     it('should transition to TESTING when started', () => {
       const mockPort: MeasurePort = {
         listenMeasure: () => new Observable<PortMeasureEvent>(),
-        stopMeasure: () => {}
+        stopMeasure: () => {},
       };
       const session = new AlcohlyzerSession(mockPort, IntensityZone.LOW_ZONE);
       session.startTest();
@@ -58,13 +67,13 @@ describe('AlcohlyzerSession', () => {
       const subject = new Subject<PortMeasureEvent>();
       const mockPort: MeasurePort = {
         listenMeasure: () => subject.asObservable(),
-        stopMeasure: () => {}
+        stopMeasure: () => {},
       };
       const session = new AlcohlyzerSession(mockPort, IntensityZone.HIGH_ZONE);
 
       const observable = session.startTest();
       let lastEvent: any = null;
-      observable.subscribe(e => lastEvent = e);
+      observable.subscribe((e) => (lastEvent = e));
 
       // Port emits intermediate measure
       subject.next({ isFinal: false, measurePercent: 50 });
@@ -73,7 +82,7 @@ describe('AlcohlyzerSession', () => {
 
       // Port emits final measure
       subject.next({ isFinal: true, measurePercent: 100 });
-      
+
       // Should now transition to RESULT
       expect(session.state.status).toBe(SessionStatus.RESULT);
       expect(lastEvent.isFinal).toBe(true);

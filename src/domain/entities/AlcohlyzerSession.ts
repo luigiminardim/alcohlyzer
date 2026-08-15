@@ -1,13 +1,13 @@
-import { Observable, map } from "rxjs";
-import { IntensityZone } from "../value-objects/IntensityZone";
-import { Intensity } from "../value-objects/Intensity";
-import { AlcohlyzerResult } from "../value-objects/AlcohlyzerResult";
-import type { MeasurePort, PortMeasureEvent } from "../ports/MeasurePort";
+import { Observable, map } from 'rxjs';
+import { IntensityZone } from '../value-objects/IntensityZone';
+import { Intensity } from '../value-objects/Intensity';
+import { AlcohlyzerResult } from '../value-objects/AlcohlyzerResult';
+import type { MeasurePort, PortMeasureEvent } from '../ports/MeasurePort';
 
 export enum SessionStatus {
-  IDLE = "IDLE",
-  TESTING = "TESTING",
-  RESULT = "RESULT",
+  IDLE = 'IDLE',
+  TESTING = 'TESTING',
+  RESULT = 'RESULT',
 }
 
 export interface AlcohlyzerMeasureEvent {
@@ -18,9 +18,7 @@ export interface AlcohlyzerMeasureEvent {
 export class AlcohlyzerSession {
   private _status: SessionStatus = SessionStatus.IDLE;
   private _targetZone: IntensityZone = IntensityZone.LOW_ZONE;
-  private _result: AlcohlyzerResult = new AlcohlyzerResult(
-    Intensity.fromPercent(0),
-  );
+  private _result: AlcohlyzerResult = new AlcohlyzerResult(Intensity.fromPercent(0));
 
   constructor(
     private readonly measurePort: MeasurePort,
@@ -63,8 +61,7 @@ export class AlcohlyzerSession {
 
     // Pick randomized target intensity for the whole session
     const boundaries = this._targetZone.intensityBoundary();
-    const targetIntensityValue =
-      boundaries[0] + Math.random() * (boundaries[1] - boundaries[0]);
+    const targetIntensityValue = boundaries[0] + Math.random() * (boundaries[1] - boundaries[0]);
 
     return this.measurePort.listenMeasure().pipe(
       map((portEvent: PortMeasureEvent) => {

@@ -4,9 +4,12 @@ import { IntensityZone, ZoneStatus } from '../../domain/value-objects/IntensityZ
 // Maps zones to center angles (0 to 180 degrees)
 const getZoneAngle = (zone: IntensityZone): number => {
   switch (zone.status) {
-    case ZoneStatus.LOW: return 30;    // Left third
-    case ZoneStatus.MID: return 90;    // Middle third
-    case ZoneStatus.HIGH: return 150;  // Right third
+    case ZoneStatus.LOW:
+      return 30; // Left third
+    case ZoneStatus.MID:
+      return 90; // Middle third
+    case ZoneStatus.HIGH:
+      return 150; // Right third
   }
 };
 

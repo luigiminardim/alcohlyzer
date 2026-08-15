@@ -41,7 +41,6 @@ export const INTENSITY_ZONES = [
   IntensityZone.HIGH_ZONE,
 ];
 
-
 export function getZoneColor(zone: IntensityZone): string {
   switch (zone.status) {
     case ZoneStatus.LOW:

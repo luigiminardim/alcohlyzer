@@ -1,11 +1,12 @@
 ---
 name: mantine-ui
-description: "Guidelines for using Mantine UI in the Barfometer project — theming, notifications, hooks, and CSS Modules."
+description: 'Guidelines for using Mantine UI in the Barfometer project — theming, notifications, hooks, and CSS Modules.'
 ---
 
 # Mantine UI Best Practices
 
 ## Purpose
+
 Guidelines for using Mantine UI in the Barfometer project — theming, notifications, hooks, and CSS Modules.
 
 ## MantineProvider Setup
@@ -23,7 +24,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <MantineProvider theme={barfometerTheme}>
     <Notifications position="top-center" autoClose={2000} />
     <App />
-  </MantineProvider>
+  </MantineProvider>,
 );
 ```
 
@@ -59,7 +60,7 @@ import { notifications } from '@mantine/notifications';
 // Zone preset confirmation
 notifications.show({
   message: `Zone set: ${zoneName} ${zoneEmoji}`,
-  color: zoneColor,   // 'green' | 'yellow' | 'red'
+  color: zoneColor, // 'green' | 'yellow' | 'red'
   autoClose: 2000,
   withCloseButton: false,
 });
@@ -68,6 +69,7 @@ notifications.show({
 ## Useful Hooks (`@mantine/hooks`)
 
 ### `useTimeout`
+
 ```typescript
 // Auto-dismiss or delayed actions
 const { start, clear } = useTimeout(() => {
@@ -76,18 +78,21 @@ const { start, clear } = useTimeout(() => {
 ```
 
 ### `useMediaQuery`
+
 ```typescript
 // Responsive behavior
 const isMobile = useMediaQuery('(max-width: 48em)');
 ```
 
 ### `useClickOutside`
+
 ```typescript
 // Close menus/popovers
 const ref = useClickOutside(() => setOpened(false));
 ```
 
 ### `useDisclosure`
+
 ```typescript
 // Toggle state with open/close/toggle helpers
 const [opened, { open, close, toggle }] = useDisclosure(false);
@@ -118,18 +123,19 @@ function Gauge() {
 
 ## Components Used in Barfometer
 
-| Mantine Component | Usage |
-|-------------------|-------|
-| `Notifications` | Zone preset confirmation toast |
-| `ActionIcon` | Language toggle, reset button |
-| `Text` | Result display labels |
-| `Overlay` | Result overlay background |
-| `Transition` | Animated entry/exit for result display |
-| `SegmentedControl` | Language toggle (EN/PT-BR) |
+| Mantine Component  | Usage                                  |
+| ------------------ | -------------------------------------- |
+| `Notifications`    | Zone preset confirmation toast         |
+| `ActionIcon`       | Language toggle, reset button          |
+| `Text`             | Result display labels                  |
+| `Overlay`          | Result overlay background              |
+| `Transition`       | Animated entry/exit for result display |
+| `SegmentedControl` | Language toggle (EN/PT-BR)             |
 
 ## Tree-Shaking
 
 Mantine v9 is tree-shakeable. Import only what you use:
+
 ```typescript
 // ✅ Good: named imports
 import { ActionIcon, Text } from '@mantine/core';
@@ -143,7 +149,9 @@ import * as Mantine from '@mantine/core';
 
 - **Style props** (≤3 per component): Quick spacing, colors
   ```tsx
-  <Text size="lg" fw={700} c="red.6">BIG CHARGE!</Text>
+  <Text size="lg" fw={700} c="red.6">
+    BIG CHARGE!
+  </Text>
   ```
 - **CSS Modules** (>3 styles or complex layout): Component-specific styling
   ```tsx

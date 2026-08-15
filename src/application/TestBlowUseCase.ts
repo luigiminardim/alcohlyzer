@@ -1,6 +1,8 @@
 import { Observable } from 'rxjs';
-import type { AlcohlyzerSession, AlcohlyzerMeasureEvent } from "../domain/entities/AlcohlyzerSession";
-
+import type {
+  AlcohlyzerSession,
+  AlcohlyzerMeasureEvent,
+} from '../domain/entities/AlcohlyzerSession';
 
 /**
  * Use case: Orchestrates the breathalyzer test.
@@ -10,9 +12,7 @@ import type { AlcohlyzerSession, AlcohlyzerMeasureEvent } from "../domain/entiti
  * - Resolves to an Observable<AlcohlyzerMeasureEvent> for UI subscription.
  */
 export class TestBlowUseCase {
-  constructor(
-    private readonly session: AlcohlyzerSession,
-  ) {}
+  constructor(private readonly session: AlcohlyzerSession) {}
 
   execute(): Observable<AlcohlyzerMeasureEvent> {
     // The session handles mapping the raw port event to the rigged AlcohlyzerMeasureEvent

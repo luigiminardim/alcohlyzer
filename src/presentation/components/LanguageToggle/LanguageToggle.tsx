@@ -25,9 +25,7 @@ export function LanguageToggle() {
         boxShadow: '0 2px 10px rgba(0,0,0,0.5)',
       }}
     >
-      <span style={{ fontSize: '1.2rem' }}>
-        {i18n.language === 'en' ? '🇺🇸' : '🇧🇷'}
-      </span>
+      <span style={{ fontSize: '1.2rem' }}>{i18n.language === 'en' ? '🇺🇸' : '🇧🇷'}</span>
     </ActionIcon>
   );
 }

@@ -41,8 +41,8 @@ export const alcohlyzerTheme = createTheme({
           fontWeight: 700,
           textTransform: 'uppercase',
           letterSpacing: '1px',
-        }
-      }
-    }
+        },
+      },
+    },
   },
 });

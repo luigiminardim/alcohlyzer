@@ -20,10 +20,9 @@ describe('useAlcohlyzer', () => {
     const microphoneFailure = new Observable<PortMeasureEvent>((subscriber) => {
       queueMicrotask(() => subscriber.error(new Error('Microphone unavailable')));
     });
-    vi.spyOn(
-      WebAudioMicrophoneAdapter.prototype,
-      'listenMeasure',
-    ).mockReturnValue(microphoneFailure);
+    vi.spyOn(WebAudioMicrophoneAdapter.prototype, 'listenMeasure').mockReturnValue(
+      microphoneFailure,
+    );
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
     const { result } = renderHook(() => useAlcohlyzer());
 

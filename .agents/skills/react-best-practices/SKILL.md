@@ -1,16 +1,18 @@
 ---
 name: react-best-practices
-description: "Guidelines for React component design, hooks usage, and state management in the Barfometer project."
+description: 'Guidelines for React component design, hooks usage, and state management in the Barfometer project.'
 ---
 
 # React Best Practices
 
 ## Purpose
+
 Guidelines for React component design, hooks usage, and state management in the Barfometer project.
 
 ## Component Patterns
 
 ### Composition over inheritance
+
 ```tsx
 // ✅ Compose small, focused components
 <Gauge>
@@ -22,8 +24,10 @@ Guidelines for React component design, hooks usage, and state management in the 
 ```
 
 ### Smart hooks, dumb components
+
 - Components: render UI, handle DOM events, delegate to hooks
 - Hooks: contain business logic, bridge to Clean Architecture use cases
+
 ```tsx
 // Component is a thin rendering layer
 function App() {
@@ -33,6 +37,7 @@ function App() {
 ```
 
 ### Props interface naming
+
 ```tsx
 interface GaugeProps {
   readonly needleAngle: number;
@@ -44,6 +49,7 @@ interface GaugeProps {
 ## Hooks Rules
 
 ### Custom hooks for logic extraction
+
 ```tsx
 // ✅ Extract complex logic into dedicated hooks
 function useMicrophone() { ... }
@@ -52,17 +58,22 @@ function useBarfometer() { ... }  // composition root
 ```
 
 ### Dependency arrays
+
 ```tsx
 // ✅ Memoize expensive objects
 const storage = useMemo(() => new LocalStorageAdapter(), []);
 
 // ✅ Stable callbacks
-const handleSetZone = useCallback((zone: Zone) => {
-  setZoneUseCase.execute(zone);
-}, [setZoneUseCase]);
+const handleSetZone = useCallback(
+  (zone: Zone) => {
+    setZoneUseCase.execute(zone);
+  },
+  [setZoneUseCase],
+);
 ```
 
 ### Cleanup effects
+
 ```tsx
 // ✅ Always clean up side effects
 useEffect(() => {
@@ -72,6 +83,7 @@ useEffect(() => {
 ```
 
 ## Error Boundaries
+
 ```tsx
 // Wrap the app in an error boundary for graceful failures
 // Especially important for microphone permission denials
@@ -83,11 +95,13 @@ useEffect(() => {
 ## Performance
 
 ### Avoid unnecessary re-renders
+
 - Use `React.memo` only when profiling shows a bottleneck
 - Keep state as local as possible
 - `useRef` for values that don't trigger re-renders (animation frames)
 
 ### Animation state
+
 ```tsx
 // ✅ Use ref for animation frame IDs — no re-render needed
 const animationFrameRef = useRef<number>(0);

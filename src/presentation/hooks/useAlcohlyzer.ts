@@ -1,21 +1,19 @@
-import { useState, useMemo, useCallback, useRef, useEffect } from "react";
-import {
-  AlcohlyzerSession,
-} from "../../domain/entities/AlcohlyzerSession";
-import { LocalStorageAdapter } from "../../infrastructure/adapters/LocalStorageAdapter";
-import { WebAudioMicrophoneAdapter } from "../../infrastructure/adapters/WebAudioMicrophoneAdapter";
-import { SetZoneUseCase } from "../../application/SetZoneUseCase";
-import { TestBlowUseCase } from "../../application/TestBlowUseCase";
-import { ResetSessionUseCase } from "../../application/ResetSessionUseCase";
-import { IntensityZone } from "../../domain/value-objects/IntensityZone";
-import type { Intensity } from "../../domain/value-objects/Intensity";
-import type { AlcohlyzerMeasureEvent } from "../../domain/entities/AlcohlyzerSession";
-import { Subscription } from "rxjs";
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import { AlcohlyzerSession } from '../../domain/entities/AlcohlyzerSession';
+import { LocalStorageAdapter } from '../../infrastructure/adapters/LocalStorageAdapter';
+import { WebAudioMicrophoneAdapter } from '../../infrastructure/adapters/WebAudioMicrophoneAdapter';
+import { SetZoneUseCase } from '../../application/SetZoneUseCase';
+import { TestBlowUseCase } from '../../application/TestBlowUseCase';
+import { ResetSessionUseCase } from '../../application/ResetSessionUseCase';
+import { IntensityZone } from '../../domain/value-objects/IntensityZone';
+import type { Intensity } from '../../domain/value-objects/Intensity';
+import type { AlcohlyzerMeasureEvent } from '../../domain/entities/AlcohlyzerSession';
+import { Subscription } from 'rxjs';
 
 export enum UiState {
-  IDLE = "IDLE",
-  LISTENING = "LISTENING",
-  RESULT = "RESULT",
+  IDLE = 'IDLE',
+  LISTENING = 'LISTENING',
+  RESULT = 'RESULT',
 }
 
 export function useAlcohlyzer() {
@@ -29,26 +27,13 @@ export function useAlcohlyzer() {
   }
   const session = sessionRef.current;
 
-  const setZoneUseCase = useMemo(
-    () => new SetZoneUseCase(session, storage),
-    [session, storage],
-  );
-  const testBlowUseCase = useMemo(
-    () => new TestBlowUseCase(session),
-    [session],
-  );
-  const resetSessionUseCase = useMemo(
-    () => new ResetSessionUseCase(session),
-    [session],
-  );
+  const setZoneUseCase = useMemo(() => new SetZoneUseCase(session, storage), [session, storage]);
+  const testBlowUseCase = useMemo(() => new TestBlowUseCase(session), [session]);
+  const resetSessionUseCase = useMemo(() => new ResetSessionUseCase(session), [session]);
 
   const [uiState, setUiState] = useState<UiState>(UiState.IDLE);
-  const [targetZone, setTargetZone] = useState<IntensityZone | null>(
-    session.targetZone,
-  );
-  const [measuredZone, setMeasuredZone] = useState<IntensityZone | null>(
-    session.state.zone,
-  );
+  const [targetZone, setTargetZone] = useState<IntensityZone | null>(session.targetZone);
+  const [measuredZone, setMeasuredZone] = useState<IntensityZone | null>(session.state.zone);
   const [measuredIntensity, setMeasuredIntensity] = useState<Intensity | null>(
     session.state.intensity.percent > 0 ? session.state.intensity : null,
   );
@@ -96,7 +81,7 @@ export function useAlcohlyzer() {
           }
         },
         error: (err) => {
-          console.error("Failed to execute test:", err);
+          console.error('Failed to execute test:', err);
           resetSessionUseCase.execute();
           setMicError(err instanceof Error ? err.message : String(err));
           setUiState(UiState.IDLE);
@@ -106,14 +91,12 @@ export function useAlcohlyzer() {
         },
       });
     } catch (err) {
-      console.error("Failed to start test:", err);
+      console.error('Failed to start test:', err);
       resetSessionUseCase.execute();
       setMicError(err instanceof Error ? err.message : String(err));
       setUiState(UiState.IDLE);
     }
   }, [testBlowUseCase, resetSessionUseCase]);
-
-
 
   const handleReset = useCallback(() => {
     if (subscriptionRef.current) {

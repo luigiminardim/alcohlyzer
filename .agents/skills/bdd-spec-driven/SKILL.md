@@ -1,11 +1,12 @@
 ---
 name: bdd-spec-driven
-description: "Guide for writing behavior-driven specs using Vitest with comment-based Given/When/Then structure."
+description: 'Guide for writing behavior-driven specs using Vitest with comment-based Given/When/Then structure.'
 ---
 
 # BDD / Spec-Driven Development Patterns
 
 ## Purpose
+
 Guide for writing behavior-driven specs using Vitest with comment-based Given/When/Then structure.
 
 ## Spec-First Workflow
@@ -19,6 +20,7 @@ Guide for writing behavior-driven specs using Vitest with comment-based Given/Wh
 ## Naming Conventions
 
 ### `describe` blocks — Feature / Component name
+
 ```typescript
 describe('BarfometerSession', () => {
   describe('Zone Setup', () => { ... });
@@ -28,10 +30,11 @@ describe('BarfometerSession', () => {
 ```
 
 ### `it` blocks — "should" + expected behavior
+
 ```typescript
-it('should start in IDLE state')
-it('should transition to ZONE_SET after zone is set')
-it('should reject starting a test without a preset zone')
+it('should start in IDLE state');
+it('should transition to ZONE_SET after zone is set');
+it('should reject starting a test without a preset zone');
 ```
 
 ## Given / When / Then Pattern
@@ -55,6 +58,7 @@ it('should transition to ZONE_SET state after zone is set', () => {
 ## Test Organization Rules
 
 ### One concept per test
+
 ```typescript
 // ✅ Good: tests ONE behavior
 it('should clamp intensity between 0 and 1', () => {
@@ -74,6 +78,7 @@ it('should create a valid blow result', () => {
 ```
 
 ### Test edge cases explicitly
+
 ```typescript
 describe('BlowResult', () => {
   it('should create a result with valid values');
@@ -87,6 +92,7 @@ describe('BlowResult', () => {
 ## Test Doubles
 
 ### When to use mocks (for ports)
+
 ```typescript
 import { vi } from 'vitest';
 
@@ -100,10 +106,12 @@ const mockStorage: StoragePort = {
 ```
 
 ### When NOT to mock
+
 - Domain entities and value objects — use real instances
 - Pure functions — no side effects, no mocks needed
 
 ## File Naming
+
 - Specs colocated with source: `Zone.ts` → `Zone.spec.ts`
 - Same directory, same name, `.spec.ts` suffix
 - Pattern: `src/domain/value-objects/Zone.spec.ts`

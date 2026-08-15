@@ -1,11 +1,12 @@
 ---
 name: clean-architecture
-description: "Enforce strict layer boundaries and dependency rules in the Barfometer project."
+description: 'Enforce strict layer boundaries and dependency rules in the Barfometer project.'
 ---
 
 # Clean Architecture Patterns
 
 ## Purpose
+
 Enforce strict layer boundaries and dependency rules in the Barfometer project.
 
 ## Layer Structure
@@ -39,12 +40,14 @@ Enforce strict layer boundaries and dependency rules in the Barfometer project.
 ## Domain Layer (`src/domain/`)
 
 ### What belongs here:
+
 - **Entities**: `BarfometerSession` — the aggregate root with state machine
 - **Value Objects**: `Zone`, `BlowResult` — immutable, equality by value
 - **Ports (interfaces)**: `MicrophonePort`, `StoragePort`, `SoundAnalyzerPort`
 - **Domain types**: `SessionState`, `SoundData`
 
 ### Rules:
+
 - **ZERO imports** from React, Mantine, Web Audio API, localStorage, or any framework
 - Only imports from other domain files or standard TypeScript
 - All external dependencies are abstracted behind port interfaces
@@ -53,15 +56,18 @@ Enforce strict layer boundaries and dependency rules in the Barfometer project.
 ## Application Layer (`src/application/`)
 
 ### What belongs here:
+
 - **Use cases**: `SetZoneUseCase`, `StartTestUseCase`, `ProcessBlowUseCase`, `ResetSessionUseCase`
 
 ### Rules:
+
 - Orchestrates domain entities and ports
 - Receives ports via constructor injection (Dependency Inversion)
 - Does NOT import concrete adapters — only port interfaces from domain
 - Does NOT import React hooks or components
 
 ### Use Case Pattern:
+
 ```typescript
 export class SetZoneUseCase {
   constructor(
@@ -79,6 +85,7 @@ export class SetZoneUseCase {
 ## Infrastructure Layer (`src/infrastructure/`)
 
 ### What belongs here:
+
 - **Adapters**: Concrete implementations of domain ports
   - `WebAudioMicrophoneAdapter` implements `MicrophonePort`
   - `LocalStorageAdapter` implements `StoragePort`
@@ -86,6 +93,7 @@ export class SetZoneUseCase {
 - **Third-party integrations**: i18n setup, PWA registration
 
 ### Rules:
+
 - Implements domain port interfaces
 - CAN import browser APIs (Web Audio, localStorage)
 - CAN import third-party libraries (i18next)
@@ -94,12 +102,14 @@ export class SetZoneUseCase {
 ## Presentation Layer (`src/presentation/`)
 
 ### What belongs here:
+
 - **React components**: Gauge, ResultDisplay, LanguageToggle
 - **Custom hooks**: `useBarfometer`, `useMicrophone`, `useGaugeAnimation`
 - **Theme**: Mantine theme configuration
 - **CSS Modules**: Component-specific styles
 
 ### Rules:
+
 - CAN import from Mantine, React, CSS Modules
 - Uses custom hooks to bridge Clean Architecture use cases to React state
 - Components are "dumb" — they render state, delegate actions to hooks
@@ -118,19 +128,16 @@ function useBarfometer() {
     const savedZone = storage.loadPresetZone();
     return new BarfometerSession(savedZone);
   }, [storage]);
-  const setZoneUseCase = useMemo(
-    () => new SetZoneUseCase(session, storage),
-    [session, storage],
-  );
+  const setZoneUseCase = useMemo(() => new SetZoneUseCase(session, storage), [session, storage]);
   // ...
 }
 ```
 
 ## Testing Implications
 
-| Layer | Test Type | Mocks Needed |
-|-------|-----------|-------------|
-| Domain | Pure unit tests | None |
-| Application | Unit tests | Mock ports (interfaces) |
+| Layer          | Test Type         | Mocks Needed               |
+| -------------- | ----------------- | -------------------------- |
+| Domain         | Pure unit tests   | None                       |
+| Application    | Unit tests        | Mock ports (interfaces)    |
 | Infrastructure | Integration tests | May need browser API mocks |
-| Presentation | Component tests | Mock hooks or use cases |
+| Presentation   | Component tests   | Mock hooks or use cases    |

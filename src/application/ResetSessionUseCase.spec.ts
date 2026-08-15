@@ -1,19 +1,13 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { ResetSessionUseCase } from "./ResetSessionUseCase";
-import {
-  AlcohlyzerSession,
-  SessionStatus,
-} from "../domain/entities/AlcohlyzerSession";
-import { IntensityZone } from "../domain/value-objects/IntensityZone";
-import { Intensity } from "../domain/value-objects/Intensity";
-import { AlcohlyzerResult } from "../domain/value-objects/AlcohlyzerResult";
-import type {
-  MeasurePort,
-  PortMeasureEvent,
-} from "../domain/ports/MeasurePort";
-import { Observable } from "rxjs";
+import { describe, it, expect, beforeEach } from 'vitest';
+import { ResetSessionUseCase } from './ResetSessionUseCase';
+import { AlcohlyzerSession, SessionStatus } from '../domain/entities/AlcohlyzerSession';
+import { IntensityZone } from '../domain/value-objects/IntensityZone';
+import { Intensity } from '../domain/value-objects/Intensity';
+import { AlcohlyzerResult } from '../domain/value-objects/AlcohlyzerResult';
+import type { MeasurePort, PortMeasureEvent } from '../domain/ports/MeasurePort';
+import { Observable } from 'rxjs';
 
-describe("ResetSessionUseCase", () => {
+describe('ResetSessionUseCase', () => {
   let session: AlcohlyzerSession;
   let useCase: ResetSessionUseCase;
 
@@ -26,7 +20,7 @@ describe("ResetSessionUseCase", () => {
     useCase = new ResetSessionUseCase(session);
   });
 
-  it("should reset the session", () => {
+  it('should reset the session', () => {
     // Given: a session with a completed test
     session.startTest();
 

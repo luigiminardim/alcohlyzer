@@ -1,5 +1,5 @@
-import { Intensity } from "./Intensity";
-import { IntensityZone } from "./IntensityZone";
+import { Intensity } from './Intensity';
+import { IntensityZone } from './IntensityZone';
 
 export class AlcohlyzerResult {
   constructor(public readonly intensity: Intensity) {}

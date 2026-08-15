@@ -8,19 +8,17 @@ import ptBR from './locales/pt-BR.json';
 const storage = new LocalStorageAdapter();
 const savedLang = storage.loadLanguagePreference() || 'en';
 
-i18n
-  .use(initReactI18next)
-  .init({
-    resources: {
-      en: { translation: en },
-      'pt-BR': { translation: ptBR },
-    },
-    lng: savedLang,
-    fallbackLng: 'en',
-    interpolation: {
-      escapeValue: false, // React handles XSS
-    },
-  });
+i18n.use(initReactI18next).init({
+  resources: {
+    en: { translation: en },
+    'pt-BR': { translation: ptBR },
+  },
+  lng: savedLang,
+  fallbackLng: 'en',
+  interpolation: {
+    escapeValue: false, // React handles XSS
+  },
+});
 
 // Save preference when language changes
 i18n.on('languageChanged', (lng) => {

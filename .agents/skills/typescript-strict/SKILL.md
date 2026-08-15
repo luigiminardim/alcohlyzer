@@ -1,22 +1,25 @@
 ---
 name: typescript-strict
-description: "Enforce maximum type safety in the Barfometer project using TypeScript 6+ strict features."
+description: 'Enforce maximum type safety in the Barfometer project using TypeScript 6+ strict features.'
 ---
 
 # TypeScript Strict Mode & Type Safety
 
 ## Purpose
+
 Enforce maximum type safety in the Barfometer project using TypeScript 6+ strict features.
 
 ## Compiler Configuration
 
 Enabled in `tsconfig.app.json`:
+
 - `"strict": true` — enables all strict checks
 - `"noUncheckedIndexedAccess": true` — array/object indexing returns `T | undefined`
 
 ## Rules
 
 ### Never use `any`
+
 ```typescript
 // ❌ Bad
 function process(data: any): any { ... }
@@ -31,6 +34,7 @@ function process(data: unknown): BlowResult {
 ```
 
 ### Use discriminated unions for state machines
+
 ```typescript
 // ✅ The SessionState pattern for BarfometerSession
 type SessionState =
@@ -42,12 +46,16 @@ type SessionState =
 ```
 
 ### Exhaustive switch with `never`
+
 ```typescript
 function getZoneLabel(zone: Zone): string {
   switch (zone) {
-    case Zone.GREEN: return 'Clean';
-    case Zone.YELLOW: return 'Small Charge';
-    case Zone.RED: return 'Big Charge';
+    case Zone.GREEN:
+      return 'Clean';
+    case Zone.YELLOW:
+      return 'Small Charge';
+    case Zone.RED:
+      return 'Big Charge';
     default: {
       const _exhaustive: never = zone;
       throw new Error(`Unknown zone: ${_exhaustive}`);
@@ -57,6 +65,7 @@ function getZoneLabel(zone: Zone): string {
 ```
 
 ### `readonly` by default
+
 ```typescript
 // ✅ Value objects are immutable
 interface BlowResult {
@@ -73,6 +82,7 @@ function getZones(): readonly Zone[] {
 ```
 
 ### Branded types for type safety
+
 ```typescript
 // Prevent mixing up raw numbers
 type Intensity = number & { readonly __brand: 'Intensity' };
@@ -85,6 +95,7 @@ function createIntensity(value: number): Intensity {
 ```
 
 ### Useful utility types
+
 ```typescript
 // Pick only what you need
 type ZoneConfig = Pick<FullConfig, 'color' | 'label'>;
@@ -100,6 +111,7 @@ type ActiveState = Exclude<SessionState, { kind: 'IDLE' }>;
 ```
 
 ### Prefer `interface` for objects, `type` for unions/intersections
+
 ```typescript
 // ✅ Interface for object shapes (extensible)
 interface StoragePort {
@@ -112,6 +124,7 @@ type SessionStateKind = 'IDLE' | 'ZONE_SET' | 'LISTENING' | 'ANIMATING' | 'RESUL
 ```
 
 ### Function return types
+
 ```typescript
 // ✅ Explicit return types for public APIs
 export function createBlowResult(params: BlowParams): BlowResult { ... }

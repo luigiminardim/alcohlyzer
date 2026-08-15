@@ -30,8 +30,10 @@ export function ZoneVisor({ state, measuredZone }: ZoneVisorProps) {
     if (state !== UiState.RESULT || !measuredZone) return '';
     const key = `result.${measuredZone.status.toLowerCase()}`;
     const phrases = t(key, { returnObjects: true });
-    return Array.isArray(phrases) ? pickRandom(phrases as string[]) : (phrases as unknown as string);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return Array.isArray(phrases)
+      ? pickRandom(phrases as string[])
+      : (phrases as unknown as string);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [measuredZone, state, i18n.language]);
 
   let content = '';
@@ -52,9 +54,11 @@ export function ZoneVisor({ state, measuredZone }: ZoneVisorProps) {
       {content && (
         <div
           className={className}
-          style={{
-            '--zone-color-rgb': colorRgb
-          } as React.CSSProperties}
+          style={
+            {
+              '--zone-color-rgb': colorRgb,
+            } as React.CSSProperties
+          }
         >
           {content}
         </div>

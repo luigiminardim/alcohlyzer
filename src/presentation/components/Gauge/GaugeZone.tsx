@@ -9,7 +9,12 @@ interface GaugeZoneProps {
   onDoubleTap: (zone: IntensityZone) => void;
 }
 
-export const GaugeZone = memo(function GaugeZone({ zone, pathData, isResult, onDoubleTap }: GaugeZoneProps) {
+export const GaugeZone = memo(function GaugeZone({
+  zone,
+  pathData,
+  isResult,
+  onDoubleTap,
+}: GaugeZoneProps) {
   const color = getZoneColor(zone);
 
   return (

@@ -1,8 +1,5 @@
-import { Observable } from "rxjs";
-import type {
-  MeasurePort,
-  PortMeasureEvent,
-} from "../../domain/ports/MeasurePort";
+import { Observable } from 'rxjs';
+import type { MeasurePort, PortMeasureEvent } from '../../domain/ports/MeasurePort';
 
 const FFT_SIZE = 256;
 const BLOW_DURATION_GOAL_MS = 1500;
@@ -93,8 +90,7 @@ export class WebAudioMicrophoneAdapter implements MeasurePort {
       const tick = (timestamp: number): void => {
         if (cleaned || !analyserNode || !dataArray) return;
 
-        const deltaMs =
-          previousTimestamp === null ? 0 : timestamp - previousTimestamp;
+        const deltaMs = previousTimestamp === null ? 0 : timestamp - previousTimestamp;
         previousTimestamp = timestamp;
 
         // Read frequency data into the pre-allocated buffer.
@@ -104,10 +100,7 @@ export class WebAudioMicrophoneAdapter implements MeasurePort {
 
         // Fill / drain accumulator
         accumulatedMs += isBlowing ? deltaMs : -deltaMs;
-        accumulatedMs = Math.max(
-          0,
-          Math.min(BLOW_DURATION_GOAL_MS, accumulatedMs),
-        );
+        accumulatedMs = Math.max(0, Math.min(BLOW_DURATION_GOAL_MS, accumulatedMs));
 
         const measurePercent = (accumulatedMs / BLOW_DURATION_GOAL_MS) * 100;
         const isFinal = accumulatedMs >= BLOW_DURATION_GOAL_MS;
@@ -189,9 +182,7 @@ function detectBlow(frequencyData: Uint8Array): boolean {
     lowFreqEnergy >= BLOW_LOW_FREQ_THRESHOLD &&
     lowFreqRatio >= BLOW_LOW_FREQ_RATIO_THRESHOLD;
 
-  console.info(
-    JSON.stringify({ isBlowing, averageVolume, lowFreqEnergy, lowFreqRatio }),
-  );
+  console.info(JSON.stringify({ isBlowing, averageVolume, lowFreqEnergy, lowFreqRatio }));
   return isBlowing;
 }
 
@@ -215,7 +206,7 @@ async function initAudioPipeline(): Promise<AudioPipeline> {
   const ctx = new AudioContext();
   // Browsers may start the context in "suspended" state (autoplay policy).
   // A suspended context yields all-zero frequency data.
-  if (ctx.state === "suspended") {
+  if (ctx.state === 'suspended') {
     await ctx.resume();
   }
   const source = ctx.createMediaStreamSource(mediaStream);
